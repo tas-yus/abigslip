@@ -1,0 +1,91 @@
+<div *ngIf="student" class="py-2">
+  <p><span class="font-weight-bold">ชื่อ-สกุล: </span>{{student.firstname}} {{student.lastname}}</p>
+
+  <div class="form my-2">
+    <h6 class="font-weight-bold">เพิ่มรายการโอน</h6>
+    <form #f="ngForm">
+
+        <div class="form-group">
+          <select (change)="updateForm($event)" #selectMode class="form-control" id="">
+            <option value="">เลือกรูปแบบการชำระเงิน</option>
+            <option value="1">กรุงไทย KTB</option>
+            <option value="2">ออมสิน</option>
+            <option value="3">7-11</option>
+          </select>
+        </div>
+
+
+        <div *ngIf="type">
+          <div class="form-group">
+            <input type="text" name="code" class="form-control"
+            placeholder="confirmation code" ngModel required #code="ngModel"
+            [class.is-invalid]="!code.valid && code.touched">
+            <span class="invalid-feedback" *ngIf="!code.valid && code.touched">
+              *โปรดใส่ confirmation code
+            </span>
+          </div>
+
+          <div class="form-group">
+            <input type="text" name="courseCode" class="form-control"
+            placeholder="รหัสคอร์ส" ngModel required #courseCode="ngModel"
+            [class.is-invalid]="!courseCode.valid && courseCode.touched">
+            <span class="invalid-feedback" *ngIf="!courseCode.valid && courseCode.touched">
+              *โปรดใส่รหัสคอร์ส
+            </span>
+          </div>
+
+          <div class="form-group">
+            <input type="number" name="price" class="form-control"
+            placeholder="ราคาคอร์ส" ngModel required #price="ngModel"
+            [class.is-invalid]="!price.valid && price.touched">
+            <span class="invalid-feedback" *ngIf="!price.valid && price.touched">
+              *โปรดใส่รหัสคอร์ส
+            </span>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input type="date" name="date" class="form-control"
+              placeholder="วันที่โอน" ngModel required #date="ngModel"
+              [class.is-invalid]="!date.valid && date.touched">
+              <span class="invalid-feedback" *ngIf="!date.valid && date.touched">
+                *โปรดใส่วันที่การโอน
+              </span>
+            </div>
+            <!-- <div class="form-group">
+              <input type="text" name="time" class="form-control"
+              placeholder="เวลาโอน" ngModel required #time="ngModel"
+              [class.is-invalid]="!time.valid && time.touched">
+              <span class="invalid-feedback" *ngIf="!time.valid && time.touched">
+                *โปรดใส่เวลาโอนตาม format ชั่วโมง:นาที:วินาที
+              </span>
+            </div> -->
+          </div>
+        </div>
+
+        <div class="form-group text-right">
+            <button (click)="onAddCourse(f); f.reset()" [disabled]="!f.form.valid || (type != 1 && type != 2 && type != 3)" class="btn btn-primary">Add</button>
+        </div>
+        <span class="invalid-feedback" *ngIf="errMessage">
+          *{{errMessage}}
+        </span>
+        <span class="invalid-feedback text-success" *ngIf="successMessage">
+          *{{successMessage}}
+        </span>
+    </form>
+  </div>
+
+  <p><span class="font-weight-bold">สรุปรายการโอน ({{student.orders.length}}):</span></p>
+    <div class="card my-2" *ngFor="let order of student.orders">
+      <div class="card-header {{types[order.type-1]}}">
+        <h5 class="my-0 text-white">{{types[order.type-1]}}</h5>
+      </div>
+      <div class="card-body">
+        <p><span class="font-weight-bold">Code:</span> {{order.code}}</p>
+        <p><span class="font-weight-bold">วันที่ (ปี-เดือน-วัน):</span> {{getDate(order.date)}}</p>
+        <p><span class="font-weight-bold">รหัสคอร์ส:</span> {{order.courseCode}}</p>
+        <p><span class="font-weight-bold">ราคา:</span> {{order.price}}</p>
+        <p><span class="font-weight-bold">เคลม: <i class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i></span>
+      </div>
+    </div>
+</div>

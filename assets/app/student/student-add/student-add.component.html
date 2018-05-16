@@ -1,0 +1,202 @@
+<div class="form my-5">
+  <h6 class="font-weight-bold">เพิ่มเด็ก</h6>
+  <form #f="ngForm">
+      <div class="form-group">
+        <input type="text" name="firstname" class="form-control"
+        placeholder="ชื่อ" ngModel required #firstname="ngModel"
+        [class.is-invalid]="!firstname.valid && firstname.touched">
+        <span class="invalid-feedback" *ngIf="!firstname.valid && firstname.touched">
+          *โปรดใส่ชื่อ
+        </span>
+      </div>
+      <div class="form-group">
+        <input type="text" name="lastname" class="form-control"
+        placeholder="นามสกุล" ngModel required #lastname="ngModel"
+        [class.is-invalid]="!lastname.valid && lastname.touched">
+        <span class="invalid-feedback" *ngIf="!lastname.valid && lastname.touched">
+          *โปรดใส่นามสกุล
+        </span>
+      </div>
+      <!-- <div class="form-group">
+        <select (change)="updateForm($event)" class="form-control" id="">
+          <option value="">เลือกรูปแบบการชำระเงิน</option>
+          <option value="1">กรุงไทย KTB</option>
+          <option value="2">ออมสิน</option>
+          <option value="3">7-11</option>
+        </select>
+      </div> -->
+
+      <!-- <div class="form-group">
+        <div class="d-flex justify-content-between py-2">
+          <label *ngIf="type == 1">ตรวจสอบรหัสกรุงไทย</label>
+          <label *ngIf="type == 2" >ตรวจสอบรหัสออมสิน</label>
+          <label *ngIf="type == 3">ตรวจสอบรหัส 7-11</label>
+          <div>
+            <i *ngIf="success" class="fa fa-check my-0"></i>
+            <i *ngIf="success === false" class="fa fa-times my-0"></i>
+            <button *ngIf="!success" [disabled]="!f.form.valid" (click)="onVerifyStudent(f)" class="btn btn-sm btn-info">check</button>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- <div class="form-group">
+        <input type="text" name="code" class="form-control"
+        placeholder="confirmation code" ngModel required #code="ngModel"
+        [class.is-invalid]="!code.valid && code.touched">
+        <span class="invalid-feedback" *ngIf="!code.valid && code.touched">
+          *โปรดใส่ confirmation code
+        </span>
+      </div>
+
+      <div class="form-group">
+        <input type="text" name="courseCode" class="form-control"
+        placeholder="รหัสคอร์ส" ngModel required #courseCode="ngModel"
+        [class.is-invalid]="!courseCode.valid && courseCode.touched">
+        <span class="invalid-feedback" *ngIf="!courseCode.valid && courseCode.touched">
+          *โปรดใส่รหัสคอร์ส
+        </span>
+      </div>
+
+      <div>
+        <div class="form-group">
+          <input type="date" name="date" class="form-control"
+          placeholder="วันที่โอน" ngModel required #date="ngModel"
+          [class.is-invalid]="!date.valid && date.touched">
+          <span class="invalid-feedback" *ngIf="!date.valid && date.touched">
+            *โปรดใส่วันที่การโอน
+          </span>
+        </div>
+        <div class="form-group">
+          <input type="text" name="time" class="form-control"
+          placeholder="เวลาโอน" ngModel required #time="ngModel"
+          [class.is-invalid]="!time.valid && time.touched">
+          <span class="invalid-feedback" *ngIf="!time.valid && time.touched">
+            *โปรดใส่เวลาโอนตาม format ชั่วโมง:นาที:วินาที
+          </span>
+        </div>
+      </div> -->
+
+      <div class="form-group text-right">
+          <button (click)="onAddStudent(f)" [disabled]="!f.form.valid" class="btn btn-primary">Add</button>
+      </div>
+      <span class="invalid-feedback" *ngIf="errorMessage1">
+        *{{errMessage1}}
+      </span>
+      <span class="invalid-feedback text-success" *ngIf="successMessage1">
+        *{{successMessage1}}
+      </span>
+  </form>
+
+  <hr>
+
+  <h6 class="font-weight-bold">ค้นหาเด็ก</h6>
+  <div class="form-group">
+    <input type="text" name="query" class="form-control"
+    placeholder="ชื่อ หรือ นามสกุล" ngModel #query="ngModel">
+  </div>
+  <div class="form-group text-right">
+    <button (click)="search(query.value)" [disabled]="query.value == ''" class="btn btn-primary">Search</button>
+  </div>
+  <div *ngIf="searchResults">
+    <div *ngIf="searchResults.length !== 0">
+      <ul>
+        <li *ngFor="let result of searchResults">
+          <a routerLink="/students/{{result._id}}">{{result.firstname}} {{result.lastname}}</a>
+        </li>
+      </ul>
+    </div>
+    <ul *ngIf="searchResults.length === 0" class="text-danger">*ไม่พบผลการค้นหา</ul>
+    <span class="invalid-feedback" *ngIf="errorMessage1">
+      {{errorMessage1}}
+    </span>
+  </div>
+  <hr>
+
+  <h6 class="font-weight-bold">ค้นหาสลิป</h6>
+  <div class="form-group">
+    <input type="text" name="queryCode" class="form-control"
+    placeholder="confirmation code" ngModel #queryCode ="ngModel">
+  </div>
+  <div class="form-group">
+    <input type="date" name="queryDate" class="form-control"
+    placeholder="วันที่โอน" ngModel #queryDate="ngModel">
+  </div>
+  <div class="form-group text-right">
+    <button (click)="searchSlip(queryCode.value, queryDate.value)" [disabled]="!queryCode.value && !queryDate.value" class="btn btn-primary">Search</button>
+  </div>
+  <div *ngIf="searchSlipResults">
+    <div *ngIf="searchSlipResults.length !== 0">
+      <ul>
+        <div *ngFor="let result of searchSlipResults">
+          <a routerLink="/orders/{{result._id}}/edit" class="{{result.claimed? 'text-success':'text-danger'}}">
+            <p>code: {{result.code}}, วันที่โอน: {{getDate(result.date)}} <i class="fa fa-tag" *ngIf="!result.createdByServer"></i></p>
+          </a>
+        </div>
+      </ul>
+    </div>
+    <ul *ngIf="searchSlipResults.length === 0" class="text-danger">*ไม่พบผลการค้นหา</ul>
+    <span class="invalid-feedback" *ngIf="errorMessage1">
+      {{errorMessage1}}
+    </span>
+  </div>
+
+  <!-- <div *ngIf="searchResults.length !== 0">
+    <ul>
+      <li *ngFor="let result of searchResults">
+        <a routerLink="/students/{{result._id}}">{{result.firstname}} {{result.lastname}}</a>
+      </li>
+    </ul>
+  </div> -->
+  <hr>
+
+  <h6 class="font-weight-bold">อัพโหลดไฟล์สลิป</h6>
+  <div class="form-group">
+    <div class="d-flex justify-content-between my-2">
+      <input type="file" name="slip" class="form-control-file" (change)="updateFile($event, file)" #fileUpload ngModel>
+      <div>
+        <button *ngIf="file" (click)="onReset()" class="btn btn-sm btn-danger">Reset</button>
+        <button *ngIf="file" (click)="onUpload()" class="btn btn-sm btn-warning">Upload</button>
+      </div>
+    </div>
+    <span class="invalid-feedback" *ngIf="errorMessage">
+      {{errorMessage}}
+    </span>
+    <span class="valid-feedback text-success" *ngIf="successMessage">
+      {{successMessage}}
+    </span>
+  </div>
+
+  <hr>
+
+  <h6 class="font-weight-bold">ดึงข้อมูลบัญชี</h6>
+  <form #form="ngForm">
+    <div class="form-group">
+      <select (change)="updateForm($event)" class="form-control" id="">
+        <option value="1">สรุปยอด</option>
+        <option value="2">ไม่ถูก match กับระบบ</option>
+        <option value="3">ไม่มา claim</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <input type="date" name="from" class="form-control"
+      placeholder="จาก" ngModel required #from="ngModel"
+      [class.is-invalid]="!from.valid && from.touched">
+      <span class="invalid-feedback" *ngIf="!from.valid && from.touched">
+        *โปรดใส่วันที่แรกของช่วงที่ต้องการ
+      </span>
+    </div>
+    <div class="form-group">
+      <input type="date" name="to" class="form-control"
+      placeholder="ถึง" ngModel required #to="ngModel"
+      [class.is-invalid]="!to.valid && to.touched">
+      <span class="invalid-feedback" *ngIf="!to.valid && to.touched">
+        *โปรดใส่วันสุดท้ายของช่วงที่ต้องการ
+      </span>
+    </div>
+    <div class="form-group text-right">
+      <a href="/{{output}}" *ngIf="output">โหลดไฟล์</a>
+      <i style="cursor:pointer; font-size:10px" class="fa fa-times pr-2" *ngIf="output" (click)="output = null"></i>
+      <button (click)="onCreateExcel(form)" [disabled]="!form.form.valid" class="btn btn-primary">Get Excel</button>
+    </div>
+  </form>
+</div>

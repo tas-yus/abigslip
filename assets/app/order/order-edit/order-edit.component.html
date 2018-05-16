@@ -1,0 +1,66 @@
+<h3>Edit Order</h3>
+<div class="form my-2">
+  <div *ngIf="order" class="py-2">
+    <p class="{{types[order.type-1]}}"><span class="font-weight-bold">Code {{types[order.type-1]}}:</span> {{order.code}} <i class="fa fa-tag" *ngIf="!order.createdByServer"></i></p>
+    <p *ngIf="order.claimedBy"><span class="font-weight-bold">ชื่อ-สกุล: </span>{{order.claimedBy.firstname}} {{order.claimedBy.lastname}}</p>
+    <p><span class="font-weight-bold">วันที่ (ปี-เดือน-วัน):</span> {{dateString}}</p>
+    <p><span class="font-weight-bold">รหัสคอร์ส:</span> {{order.courseCode}}</p>
+    <p><span class="font-weight-bold">ราคา:</span> {{order.price}}</p>
+    <p><span class="font-weight-bold">เคลม:</span>
+      <i class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i>
+    </p>
+    <div *ngIf="canEdit">
+      <div class="text-right">
+        <button class="btn btn-primary" (click)="showEdit = !showEdit">{{!showEdit? 'Edit':'Hide'}}</button>
+      </div>
+
+      <form #f="ngForm" *ngIf="showEdit">
+        <h6>แก้ไขข้อมูลสลิป</h6>
+        <div class="form-group">
+          <input type="text" name="code" class="form-control"
+          placeholder="confirmation code" [(ngModel)]="ngOrder.code">
+        </div>
+
+        <div class="form-group">
+          <input type="text" name="courseCode" class="form-control"
+          placeholder="รหัสคอร์ส" [(ngModel)]="ngOrder.courseCode">
+        </div>
+
+        <div class="form-group">
+          <input type="number" name="price" class="form-control"
+          placeholder="ราคาคอร์ส" [(ngModel)]="ngOrder.price">
+        </div>
+
+        <div>
+          <div class="form-group">
+            <input type="date" name="dateString" class="form-control"
+            placeholder="วันที่โอน" [(ngModel)]="dateString">
+          </div>
+          <!-- <div class="form-group">
+            <input type="text" name="timeString" class="form-control"
+            placeholder="เวลาโอน" [(ngModel)]="timeString">
+          </div> -->
+        </div>
+
+
+          <div class="form-group">
+            <select (change)="updateForm($event)" name="type" [(ngModel)]="order.type" class="form-control" id="">
+              <option value="1">กรุงไทย KTB</option>
+              <option value="2">ออมสิน</option>
+              <option value="3">7-11</option>
+            </select>
+          </div>
+
+          <div class="form-group text-right">
+              <button (click)="onEditOrder(f)" [disabled]="!f.form.valid || resultingOrder" class="btn btn-primary">Edit</button>
+          </div>
+          <span class="invalid-feedback" *ngIf="errMessage">
+            *{{errMessage}}
+          </span>
+          <span class="invalid-feedback text-success" *ngIf="successMessage">
+            *{{successMessage}}
+          </span>
+      </form>
+    </div>
+  </div>
+</div>

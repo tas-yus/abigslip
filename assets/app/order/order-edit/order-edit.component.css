@@ -1,0 +1,26 @@
+.form {
+  width: 75%;
+  min-width: 300px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.invalid-feedback {
+  display: block;
+}
+
+.valid-feedback {
+  display: block;
+}
+
+.KTB {
+  color: #1BA4E1;
+}
+
+.GSB {
+  color: #D5116E;
+}
+
+.CS {
+  color: #FC5F20;
+}
