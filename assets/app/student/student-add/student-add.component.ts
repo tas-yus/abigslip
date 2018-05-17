@@ -28,7 +28,7 @@ export class StudentAddComponent implements OnInit {
   searchSlipResults = [];
   @ViewChild('fileUpload') fileUpload;
 
-  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
+  constructor(private http: HttpClient, private router: Router, public authService: AuthService) {}
 
   ngOnInit() {}
 

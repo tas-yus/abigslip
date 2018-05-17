@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
   errMessage: String;
   successMessage: String;
 
-  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
+  constructor(private http: HttpClient, private router: Router, public authService: AuthService) {}
 
   ngOnInit() {
     if (this.authService.isAuthenticated()) {

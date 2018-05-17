@@ -17,7 +17,7 @@ export class StudentShowComponent implements OnInit {
   types = ['KTB', 'GSB', 'CS'];
   @ViewChild('selectMode') selectMode;
 
-  constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, private authService: AuthService) {}
+  constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, public authService: AuthService) {}
 
   ngOnInit() {
     const id = this.route.snapshot.params['id'];

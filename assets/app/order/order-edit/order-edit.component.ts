@@ -24,7 +24,7 @@ export class OrderEditComponent implements OnInit {
 
   @ViewChild('selectMode') selectMode;
 
-  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, private authService: AuthService) {}
+  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, public authService: AuthService) {}
 
   ngOnInit() {
     const id = this.route.snapshot.params['id'];
