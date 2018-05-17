@@ -36,9 +36,8 @@ export class StudentShowComponent implements OnInit {
     const id = this.route.snapshot.params['id'];
     const price = form.value.price;
     const branch = this.authService.getBranch();
-    this.parseDate(date);
     var body:any = {
-      type: this.type, code, date: this.date, courseCode, price, branch
+      type: this.type, code, date, courseCode, price, branch
     };
     this.http.post<any>(`/api/students/${id}/courses?token=${this.authService.getToken()}`, body).subscribe((data) => {
       this.http.get<any[]>(`/api/students/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
@@ -55,11 +54,11 @@ export class StudentShowComponent implements OnInit {
     });
   }
 
-  parseDate(date) {
-    var splittedDate = date.split("-");
-    this.date = new Date(Number(splittedDate[0]), Number(splittedDate[1])-1, Number(splittedDate[2]),
-    0, 0, 0, 0);
-  }
+  // parseDate(date) {
+  //   var splittedDate = date.split("-");
+  //   this.date = new Date(Number(splittedDate[0]), Number(splittedDate[1])-1, Number(splittedDate[2]),
+  //   0, 0, 0, 0);
+  // }
 
   updateForm(e) {
     this.type = e.srcElement.value;

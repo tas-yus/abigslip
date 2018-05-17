@@ -48,12 +48,12 @@ export class StudentAddComponent implements OnInit {
     });
   }
 
-  parseDate(date, time) {
-    var splittedDate = date.split("-");
-    var splittedTime = time.split(":");
-    this.date = new Date(Number(splittedDate[0]), Number(splittedDate[1])-1, Number(splittedDate[2]),
-    Number(splittedTime[0]), Number(splittedTime[1]), Number(splittedTime[2]), 0);
-  }
+  // parseDate(date, time) {
+  //   var splittedDate = date.split("-");
+  //   var splittedTime = time.split(":");
+  //   this.date = new Date(Number(splittedDate[0]), Number(splittedDate[1])-1, Number(splittedDate[2]),
+  //   Number(splittedTime[0]), Number(splittedTime[1]), Number(splittedTime[2]), 0);
+  // }
 
   search(value) {
     var query = value === ''? '' : `&&name=${value}`;

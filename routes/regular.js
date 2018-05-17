@@ -25,6 +25,16 @@ router.use('/api/', (req, res, next) => {
 });
 
 router.post('/api/students/:id/courses', (req, res) => {
+  var parseDate = (date) => {
+    if (typeof date == "string") {
+      var splittedDate = date.split("-");
+      return new Date(Number(splittedDate[0]), Number(splittedDate[1])-1, Number(splittedDate[2]),
+      0, 0, 0, 0);
+    } else if (typeof date.getMonth === "function") {
+      return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
+      0, 0, 0, 0);
+    }
+  }
   Student.findById(req.params.id).then((student) => {
     if (!student) {
       return res.status(400).send({message: "ไม่มีนักเรียนที่ต้องการใน database"});
@@ -34,7 +44,7 @@ router.post('/api/students/:id/courses', (req, res) => {
       code: String(req.body.code).trim(),
       courseCode: String(req.body.courseCode).trim(),
       price: req.body.price,
-      date: req.body.date
+      date: parseDate(req.body.date)
     };
     Order.findOne(queryObject, (err, order) => {
       if (err) {
