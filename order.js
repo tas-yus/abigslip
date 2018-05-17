@@ -18,6 +18,9 @@ var OrderSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  branch: {
+    type: Number,
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -34,6 +37,14 @@ var OrderSchema = new mongoose.Schema({
   claimed: {
     type: Boolean,
     default: false
+  },
+  void: {
+    type: Boolean,
+    default: false
+  },
+  matchedWith: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Order"
   }
 }, { emitIndexErrors: true });
 

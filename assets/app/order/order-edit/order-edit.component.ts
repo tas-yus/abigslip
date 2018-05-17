@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../auth.service';
 
 @Component({
     selector: 'order-edit',
@@ -17,11 +18,13 @@ export class OrderEditComponent implements OnInit {
   errMessage = null;
   successMessage = null;
   canEdit = true;
+  errorMessage1 = null;
+  loading = false;
   types = ['KTB', 'GSB', 'CS'];
 
   @ViewChild('selectMode') selectMode;
 
-  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {}
+  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, private authService: AuthService) {}
 
   ngOnInit() {
     const id = this.route.snapshot.params['id'];
@@ -29,8 +32,8 @@ export class OrderEditComponent implements OnInit {
   }
 
   requestOrder(id) {
-    this.http.get<any>(`/api/orders/${id}`).subscribe((data) => {
-      if (data.claimed || data.createdByServer) {
+    this.http.get<any>(`/api/orders/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
+      if (data.claimed || data.createdByServer || data.void) {
         this.canEdit = false;
       }
       this.order = data;
@@ -46,7 +49,7 @@ export class OrderEditComponent implements OnInit {
       this.type = data.type;
       this.getDate(data.date);
     }, (err) => {
-      console.log(err);
+      this.router.navigate(['/home']);
     });
   }
 
@@ -76,14 +79,18 @@ export class OrderEditComponent implements OnInit {
     this.parseDate(this.dateString);
     this.ngOrder.date = this.date;
     this.ngOrder.type = this.type;
-    this.http.post<any>('/api/orders/verify', this.ngOrder)
+    const id = this.route.snapshot.params['id'];
+    this.http.post<any>(`/api/orders/${id}/verify?token=${this.authService.getToken()}`, this.ngOrder)
     .subscribe((data) => {
       this.successMessage = data.message;
       this.router.navigate([`/orders/${data.id}/edit`]);
       this.requestOrder(data.id);
       this.canEdit = false;
     }, (err) => {
-      console.log(err);
+      this.errorMessage1 = err.error.message;
+      setTimeout(() => {
+        this.errorMessage1 = null;
+      }, 3000);
     });
   }
 }

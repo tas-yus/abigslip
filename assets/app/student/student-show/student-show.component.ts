@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
+import { AuthService } from '../../auth.service';
 
 @Component({
     selector: 'student-show',
@@ -16,37 +17,16 @@ export class StudentShowComponent implements OnInit {
   types = ['KTB', 'GSB', 'CS'];
   @ViewChild('selectMode') selectMode;
 
-  constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router) {}
+  constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, private authService: AuthService) {}
 
   ngOnInit() {
     const id = this.route.snapshot.params['id'];
-    this.http.get<any[]>(`/api/students/${id}`).subscribe((data) => {
+    this.http.get<any[]>(`/api/students/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
       this.student = data;
     }, (err) => {
-      console.log(err);
+      this.router.navigate(['/home']);
     });
   }
-
-  // onVerifyCourse(form: NgForm) {
-  //   const date = form.value.date;
-  //   const time = form.value.time;
-  //   const code = form.value.code;
-  //   var body:any = {
-  //     type: this.type, code
-  //   };
-  //   if (this.type != 3) {
-  //     this.parseDate(date, time);
-  //     body.date = this.date;
-  //   }
-  //   this.http.post<any>('/api/orders/verify', body).subscribe((data) => {
-  //     this.success = true;
-  //   }, (err) => {
-  //     this.success = false;
-  //     setTimeout(() => {
-  //       this.success = null;
-  //     }, 2000);
-  //   });
-  // }
 
   onAddCourse(form: NgForm) {
     const date = form.value.date;
@@ -55,12 +35,13 @@ export class StudentShowComponent implements OnInit {
     const courseCode = form.value.courseCode;
     const id = this.route.snapshot.params['id'];
     const price = form.value.price;
+    const branch = this.authService.getBranch();
     this.parseDate(date);
     var body:any = {
-      type: this.type, code, date: this.date, courseCode, price
+      type: this.type, code, date: this.date, courseCode, price, branch
     };
-    this.http.post<any>(`/api/students/${id}/courses`, body).subscribe((data) => {
-      this.http.get<any[]>(`/api/students/${id}`).subscribe((data) => {
+    this.http.post<any>(`/api/students/${id}/courses?token=${this.authService.getToken()}`, body).subscribe((data) => {
+      this.http.get<any[]>(`/api/students/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
         this.student = data;
         this.success = null;
         this.date = null;

@@ -10,8 +10,12 @@ var Course = require("./course");
 var Student = require("./student");
 var Order = require("./order");
 var async = require("async");
+var bcrypt = require("bcryptjs");
+var User = require("./user");
 
 var appRoutes = require('./routes/app');
+var regRoutes = require('./routes/regular');
+var adminRoutes = require('./routes/admin');
 
 var app = express();
 
@@ -37,188 +41,135 @@ app.use(function (req, res, next) {
 });
 
 app.use('/', appRoutes);
+app.use('/', regRoutes);
+app.use('/', adminRoutes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     return res.render('index');
 });
 
-// var courses = [
-//   {
-//     title: "Sci1",
-//     code: "BG1001"
-//   },
-//   {
-//     title: "Sci2",
-//     code: "BG1002",
-//   },
-//   {
-//     title: "Sci3",
-//     code: "BG1003"
-//   },
-//   {
-//     title: "Sci4",
-//     code: "BG1004"
-//   },
-//   {
-//     title: "Sci5",
-//     code: "BG1005"
-//   },
-//   {
-//     title: "Sci6",
-//     code: "BG1006"
-//   },
-//   {
-//     title: "Sci7",
-//     code: "BG1007"
-//   },
-//   {
-//     title: "Sci8",
-//     code: "BG1008"
-//   },
-//   {
-//     title: "Sci9",
-//     code: "BG1009"
-//   },
-//   {
-//     title: "Chem4A",
-//     code: "BG1010"
-//   },
-//   {
-//     title: "Chem4B",
-//     code: "BG1010"
-//   },
-//   {
-//     title: "Chem4C",
-//     code: "BG1010"
-//   },
-//   {
-//     title: "Chem5A",
-//     code: "BG1011"
-//   },
-//   {
-//     title: "Chem5B",
-//     code: "BG1012"
-//   },
-//   {
-//     title: "Chem5C",
-//     code: "BG1013"
-//   },
-//   {
-//     title: "Chem6A",
-//     code: "BG1014"
-//   },
-//   {
-//     title: "Chem6B",
-//     code: "BG1015"
-//   },
-//   {
-//     title: "Chem6C",
-//     code: "BG1016"
-//   },
-//   {
-//     title: "Org1",
-//     code: "BG1017"
-//   },
-//   {
-//     title: "Org2",
-//     code: "BG1018"
-//   },
-//   {
-//     title: "Org3",
-//     code: "BG1019"
-//   },
-// ];
-
-var orders = [
+var users = [
   {
-    code: "01284396",
-    courseCode: "BG1007",
-    type: 1,
-    date: new Date("2018-12-24 10:33:30"),
-    claimedAt: new Date(),
-    claimed: false,
-    price: 3000
+    username: 'abigcenteradmin',
+    password: 'abig',
+    branch: 0,
+    isAdmin: true
   },
   {
-    code: "11284395",
-    courseCode: "BG1011",
-    type: 1,
-    date: new Date(2018, 11, 24, 10, 33, 30, 0),
-    price: 3000
+    username: 'abigcenterbg',
+    password: 'abig',
+    branch: 1,
+    isAdmin: false
   },
   {
-    code: "018866396",
-    courseCode: "BG1003",
-    type: 2,
-    date: new Date(2018, 11, 24, 10, 33, 30, 0),
-    price: 3000
+    username: 'abigcenterbw',
+    password: 'abig',
+    branch: 2,
+    isAdmin: false
   },
   {
-    code: "118866676",
-    courseCode: "BG1004",
-    type: 2,
-    date: new Date(2018, 11, 24, 10, 33, 30, 0),
-    price: 3000
+    username: 'abigcenterbb',
+    password: 'abig',
+    branch: 3,
+    isAdmin: false
   },
   {
-    code: "21284",
-    courseCode: "BG1001",
-    type: 3,
-    date: new Date(2018, 11, 24, 10, 33, 30, 0),
-    price: 3000
+    username: 'abigcenterbc',
+    password: 'abig',
+    branch: 4,
+    isAdmin: false
   },
   {
-    code: "01284",
-    courseCode: "BG1002",
-    type: 3,
-    date: new Date(2018, 11, 24, 10, 33, 30, 0),
-    price: 3000
+    username: 'abigcenterbs',
+    password: 'abig',
+    branch: 5,
+    isAdmin: false
+  },
+  {
+    username: 'abigcenterbp',
+    password: 'abig',
+    branch: 6,
+    isAdmin: false
+  },
+  {
+    username: 'abigcenterbng',
+    password: 'abig',
+    branch: 7,
+    isAdmin: false
+  },
+  {
+    username: 'abigcenterbr',
+    password: 'abig',
+    branch: 8,
+    isAdmin: false
+  },
+  {
+    username: 'abigcenterbh',
+    password: 'abig',
+    branch: 9,
+    isAdmin: false
+  },
+  {
+    username: 'abigcenterbu',
+    password: 'abig',
+    branch: 10,
+    isAdmin: false
+  },
+  {
+    username: 'abigcenterbpk',
+    password: 'abig',
+    branch: 11,
+    isAdmin: false
+  },
+  {
+    username: 'abigcenterbn',
+    password: 'abig',
+    branch: 12,
+    isAdmin: false
+  },
+  {
+    username: 'abigcenterba',
+    password: 'abig',
+    branch: 13,
+    isAdmin: false
+  },
+  {
+    username: 'abigcenterbq',
+    password: 'abig',
+    branch: 14,
+    isAdmin: false
   }
 ];
 
-// Course.remove({}).then(() => {
-//   console.log("courses removed");
-//   return new Promise(function(resolve, reject) {
-//     async.forEach(courses, (course, cb) => {
-//       Course.create(course).then((course) => {
-//         console.log(`${course.title} created`);
-//         cb();
-//       }).catch((err) => {
-//         console.log(err);
-//         reject(err);
-//       });
-//     }, (err) => {
-//       if (err) return reject(err);
-//       resolve();
-//     });
-//   });
-// }).catch((err) => {
-//   console.log(err);
-// });
-
 Order.remove({}).then(() => {
   console.log("orders removed");
-  return new Promise(function(resolve, reject) {
-    async.forEach(orders, (order, cb) => {
-      Order.create(order).then((order) => {
-        console.log(`Code: ${order.code}, Type: ${order.type} created`);
-        cb();
-      }).catch((err) => {
-        console.log(err);
-        reject(err);
-      });
-    }, (err) => {
-      if (err) return reject(err);
-      resolve();
-    });
-  });
 }).catch((err) => {
   console.log(err);
 });
 
 Student.remove({}).then(() => {
   console.log("students removed");
+}).catch((err) => {
+  console.log(err);
+});
+
+User.remove({}).then(() => {
+  async.forEach(users, (user, callback) => {
+    user.password = bcrypt.hashSync(user.password, 10);
+    var newUser = new User(user);
+    newUser.save((err) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log("user created");
+      callback();
+    })
+  }, (err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
 }).catch((err) => {
   console.log(err);
 });

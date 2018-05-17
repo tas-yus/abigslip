@@ -1,8 +1,14 @@
 var mongoose = require("mongoose");
 
 var StudentSchema = new mongoose.Schema({
-  firstname: String,
-  lastname: String,
+  firstname: {
+    type: String,
+    required: true
+  },
+  lastname: {
+    type: String,
+    required: true
+  },
   courses: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Course",

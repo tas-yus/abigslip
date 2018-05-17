@@ -1,0 +1,9 @@
+.login {
+  width: 33%;
+  min-width: 300px;
+  margin: 0 auto;
+}
+
+.invalid-feedback {
+  display: block;
+}
