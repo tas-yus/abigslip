@@ -76,8 +76,7 @@ export class OrderEditComponent implements OnInit {
   }
 
   onEditOrder(form: NgForm) {
-    this.parseDate(this.dateString);
-    this.ngOrder.date = this.date;
+    this.ngOrder.date = this.dateString;
     this.ngOrder.type = this.type;
     const id = this.route.snapshot.params['id'];
     this.http.post<any>(`/api/orders/${id}/verify?token=${this.authService.getToken()}`, this.ngOrder)

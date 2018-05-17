@@ -33,12 +33,13 @@ router.use('/api/', (req, res, next) => {
   });
 });
 
+
 router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
   var queryObject = {
     type: req.body.type,
     code: String(req.body.code).trim(),
     courseCode: String(req.body.courseCode).trim(),
-    date: req.body.date,
+    date: parseDate(req.body.date),
     price: req.body.price
   };
   Order.findOne(queryObject).then((order) => {
