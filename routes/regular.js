@@ -27,8 +27,8 @@ router.use('/api/', (req, res, next) => {
 router.post('/api/students/:id/courses', (req, res) => {
   var parseDate = (date) => {
     if (typeof date == "string") {
-      var splittedDate = date.split("-");
-      return new Date(Number(splittedDate[0]), Number(splittedDate[1])-1, Number(splittedDate[2]),
+      var splittedDate = date.split("/");
+      return new Date(Number(splittedDate[2]), Number(splittedDate[1])-1, Number(splittedDate[0]),
       0, 0, 0, 0);
     } else if (typeof date.getMonth === "function") {
       return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
@@ -122,7 +122,7 @@ router.get("/api/students/search", (req, res) => {
 
 router.get("/api/students", (req, res) => {
   var limit = req.query.limit? Number(req.query.limit) : 100;
-  Student.find({}).populate({path: 'lastOrder', options: { sort: { 'createdAt': -1 } } })
+  Student.find({}).populate({path: 'lastOrder', options: { sort: { 'updatedAt': -1 } } })
   .limit(limit).exec((err, students) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});

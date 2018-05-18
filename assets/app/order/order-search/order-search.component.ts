@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../auth.service';
+import { IMyDpOptions} from 'mydatepicker';
 
 @Component({
     selector: 'order-search',
@@ -14,6 +15,12 @@ export class OrderSearchComponent implements OnInit {
   errorMessage3 = null;
   searchSlipResults = [];
   date = null;
+
+  public myDatePickerOptions: IMyDpOptions = {
+      dateFormat: 'dd/mm/yyyy',
+   };
+
+  public placeholder: string = " วัน/เดือน/ปี";
 
   constructor(private http: HttpClient, private router: Router, public authService: AuthService) {}
 
@@ -41,7 +48,19 @@ export class OrderSearchComponent implements OnInit {
     });
   }
 
+  onDateChanged(e) {
+    this.date = e.formatted;
+  }
+
   getDate(date) {
-    return new Date(date).toLocaleDateString();
+    var newDate = new Date(date).toLocaleDateString();
+    var parsedDate = newDate.split("/");
+    if (Number(parsedDate[0]) < 10) {
+      parsedDate[0] = "0" + parsedDate[0]
+    }
+    if (Number(parsedDate[1]) < 10) {
+      parsedDate[1] = "0" + parsedDate[1]
+    }
+    return `${parsedDate[1]}-${parsedDate[0]}-${parsedDate[2]}`;
   }
 }

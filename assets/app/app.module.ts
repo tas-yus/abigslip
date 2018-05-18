@@ -16,6 +16,7 @@ import { OrderListComponent } from './order/order-list/order-list.component';
 import { OrderSearchComponent } from './order/order-search/order-search.component';
 import { LoginComponent } from './login/login.component';
 import { HeaderComponent } from './header/header.component';
+import { MyDatePickerModule } from 'mydatepicker';
 
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth-guard.service';
@@ -35,7 +36,8 @@ import { AuthGuard } from './auth-guard.service';
         StudentListComponent,
         OrderListComponent
     ],
-    imports: [BrowserModule, AppRoutingModule, FormsModule, HttpClientModule],
+    imports: [BrowserModule, AppRoutingModule, FormsModule,
+      HttpClientModule, MyDatePickerModule],
     providers: [AuthService, AuthGuard],
     bootstrap: [AppComponent]
 })

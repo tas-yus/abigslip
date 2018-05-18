@@ -42,7 +42,20 @@ export class OrderListComponent implements OnInit {
   }
 
   getDate(date) {
-    return new Date(date).toLocaleString();
+    var newDate = new Date(date)
+    return this.updateDate(newDate.toLocaleDateString()) +", "+ newDate.toLocaleTimeString();
+  }
+
+  updateDate(date) {
+    var newDate = new Date(date).toLocaleDateString();
+    var parsedDate = newDate.split("/");
+    if (Number(parsedDate[0]) < 10) {
+      parsedDate[0] = "0" + parsedDate[0]
+    }
+    if (Number(parsedDate[1]) < 10) {
+      parsedDate[1] = "0" + parsedDate[1]
+    }
+    return `${parsedDate[1]}-${parsedDate[0]}-${parsedDate[2]}`;
   }
 
   selectFilter(e) {

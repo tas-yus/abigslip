@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { AuthService } from '../../auth.service';
+import { IMyDpOptions} from 'mydatepicker';
 
 @Component({
     selector: 'student-show',
@@ -15,7 +16,14 @@ export class StudentShowComponent implements OnInit {
   date = null;
   success = null;
   types = ['KTB', 'GSB', 'CS'];
+  model = null;
   @ViewChild('selectMode') selectMode;
+
+  public myDatePickerOptions: IMyDpOptions = {
+      dateFormat: 'dd/mm/yyyy',
+   };
+
+  private placeholder: string = " วัน/เดือน/ปี";
 
   constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, public authService: AuthService) {}
 
@@ -29,7 +37,7 @@ export class StudentShowComponent implements OnInit {
   }
 
   onAddCourse(form: NgForm) {
-    const date = form.value.date;
+    const date = this.date;
     const time = form.value.time;
     const code = form.value.code;
     const courseCode = form.value.courseCode;
@@ -73,6 +81,10 @@ export class StudentShowComponent implements OnInit {
     if (Number(parsedDate[1]) < 10) {
       parsedDate[1] = "0" + parsedDate[1]
     }
-    return `${parsedDate[2]}-${parsedDate[0]}-${parsedDate[1]}`;
+    return `${parsedDate[1]}-${parsedDate[0]}-${parsedDate[2]}`;
+  }
+
+  onDateChanged(e) {
+    this.date = e.formatted;
   }
 }

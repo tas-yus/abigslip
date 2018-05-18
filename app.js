@@ -49,99 +49,99 @@ app.use(function (req, res, next) {
     return res.render('index');
 });
 
-var users = [
-  {
-    username: 'abigcenteradmin',
-    password: 'abig',
-    branch: 0,
-    isAdmin: true
-  },
-  {
-    username: 'abigcenterbg',
-    password: 'abig',
-    branch: 1,
-    isAdmin: false
-  },
-  {
-    username: 'abigcenterbw',
-    password: 'abig',
-    branch: 2,
-    isAdmin: false
-  },
-  {
-    username: 'abigcenterbb',
-    password: 'abig',
-    branch: 3,
-    isAdmin: false
-  },
-  {
-    username: 'abigcenterbc',
-    password: 'abig',
-    branch: 4,
-    isAdmin: false
-  },
-  {
-    username: 'abigcenterbs',
-    password: 'abig',
-    branch: 5,
-    isAdmin: false
-  },
-  {
-    username: 'abigcenterbp',
-    password: 'abig',
-    branch: 6,
-    isAdmin: false
-  },
-  {
-    username: 'abigcenterbng',
-    password: 'abig',
-    branch: 7,
-    isAdmin: false
-  },
-  {
-    username: 'abigcenterbr',
-    password: 'abig',
-    branch: 8,
-    isAdmin: false
-  },
-  {
-    username: 'abigcenterbh',
-    password: 'abig',
-    branch: 9,
-    isAdmin: false
-  },
-  {
-    username: 'abigcenterbu',
-    password: 'abig',
-    branch: 10,
-    isAdmin: false
-  },
-  {
-    username: 'abigcenterbpk',
-    password: 'abig',
-    branch: 11,
-    isAdmin: false
-  },
-  {
-    username: 'abigcenterbn',
-    password: 'abig',
-    branch: 12,
-    isAdmin: false
-  },
-  {
-    username: 'abigcenterba',
-    password: 'abig',
-    branch: 13,
-    isAdmin: false
-  },
-  {
-    username: 'abigcenterbq',
-    password: 'abig',
-    branch: 14,
-    isAdmin: false
-  }
-];
-
+// var users = [
+//   {
+//     username: 'abigcenteradmin',
+//     password: 'abig',
+//     branch: 0,
+//     isAdmin: true
+//   },
+//   {
+//     username: 'abigcenterbg',
+//     password: 'abig',
+//     branch: 1,
+//     isAdmin: false
+//   },
+//   {
+//     username: 'abigcenterbw',
+//     password: 'abig',
+//     branch: 2,
+//     isAdmin: false
+//   },
+//   {
+//     username: 'abigcenterbb',
+//     password: 'abig',
+//     branch: 3,
+//     isAdmin: false
+//   },
+//   {
+//     username: 'abigcenterbc',
+//     password: 'abig',
+//     branch: 4,
+//     isAdmin: false
+//   },
+//   {
+//     username: 'abigcenterbs',
+//     password: 'abig',
+//     branch: 5,
+//     isAdmin: false
+//   },
+//   {
+//     username: 'abigcenterbp',
+//     password: 'abig',
+//     branch: 6,
+//     isAdmin: false
+//   },
+//   {
+//     username: 'abigcenterbng',
+//     password: 'abig',
+//     branch: 7,
+//     isAdmin: false
+//   },
+//   {
+//     username: 'abigcenterbr',
+//     password: 'abig',
+//     branch: 8,
+//     isAdmin: false
+//   },
+//   {
+//     username: 'abigcenterbh',
+//     password: 'abig',
+//     branch: 9,
+//     isAdmin: false
+//   },
+//   {
+//     username: 'abigcenterbu',
+//     password: 'abig',
+//     branch: 10,
+//     isAdmin: false
+//   },
+//   {
+//     username: 'abigcenterbpk',
+//     password: 'abig',
+//     branch: 11,
+//     isAdmin: false
+//   },
+//   {
+//     username: 'abigcenterbn',
+//     password: 'abig',
+//     branch: 12,
+//     isAdmin: false
+//   },
+//   {
+//     username: 'abigcenterba',
+//     password: 'abig',
+//     branch: 13,
+//     isAdmin: false
+//   },
+//   {
+//     username: 'abigcenterbq',
+//     password: 'abig',
+//     branch: 14,
+//     isAdmin: false
+//   }
+// ];
+//
 // Order.remove({}).then(() => {
 //   console.log("orders removed");
 // }).catch((err) => {

@@ -17,9 +17,7 @@ var processFormBody = multer({storage: multer.memoryStorage()}).single('file');
 
 function allowAdmin (req, res, next) {
   if (!jwt.decode(req.query.token).user.isAdmin) {
-    if (err) {
-      return res.status(401).send({message: "Unauthorized"});
-    }
+    return res.status(401).send({message: "Unauthorized"});
   }
   next();
 };
@@ -35,7 +33,7 @@ router.use('/api/', (req, res, next) => {
 
 router.get('/api/orders', allowAdmin, (req, res) => {
   var limit = req.query.limit? Number(req.query.limit) : 100;
-  Order.find({}).populate("claimedBy").sort({claimedAt: 1}).limit(limit).exec((err, orders) => {
+  Order.find({}).populate("claimedBy").sort({updatedAt: 1}).limit(limit).exec((err, orders) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});
     }
@@ -105,6 +103,7 @@ router.get("/api/orders/search", allowAdmin, (req, res) => {
   var date;
   if (req.query.date) {
     date = parseDate(req.query.date);
+    console.log(date)
   }
   if (req.query.code && req.query.date) {
     query = {
@@ -311,9 +310,10 @@ function extractFileType(filename) {
 }
 
 function parseDate (date) {
+  console.log(date);
   if (typeof date == "string") {
-    var splittedDate = date.split("-");
-    return new Date(Number(splittedDate[0]), Number(splittedDate[1])-1, Number(splittedDate[2]),
+    var splittedDate = date.split("/");
+    return new Date(Number(splittedDate[2]), Number(splittedDate[1])-1, Number(splittedDate[0]),
     0, 0, 0, 0);
   }
 }

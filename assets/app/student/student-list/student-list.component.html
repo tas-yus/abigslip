@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-between">
-  <h3>Student Page
+  <h4>Student Page
     <i *ngIf="loading" class="fa fa-spin fa-spinner fa-fw pl-2"></i>
-  </h3>
+  </h4>
   <i style="cursor:pointer" (click)="search = !search" class="fa fa-search fa-2x"></i>
 </div>
 <student-search *ngIf="search"></student-search>
@@ -32,18 +32,30 @@
       </tr>
     </thead>
     <tr *ngFor="let student of students; let i = index">
-      <td>{{i + 1}}</td>
+      <td class="font-weight-bold">{{i + 1}}</td>
       <a routerLink="/students/{{student._id}}"><td>{{student.firstname}} {{student.lastname}}</td></a>
-      <td class="font-weight-bold {{types[student.lastOrder.type-1]}}">{{types[student.lastOrder.type-1]}}</td>
-      <td>{{student.lastOrder.code}}</td>
-      <td>{{student.lastOrder.courseCode}}</td>
-      <td>{{student.lastOrder.price}}</td>
-      <td>
-        <i class="fa {{student.lastOrder.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i>
-      </td>
-      <td>
-        {{getDate(student.lastOrder.createdAt)}}
-      </td>
+      <ng-template [ngIf]="student.lastOrder">
+        <td class="font-weight-bold {{types[student.lastOrder.type-1]}}">{{types[student.lastOrder.type-1]}}</td>
+        <td>{{student.lastOrder.code}}</td>
+        <td>{{student.lastOrder.courseCode}}</td>
+        <td>{{student.lastOrder.price}}</td>
+        <td>
+          <i class="fa {{student.lastOrder.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i>
+        </td>
+        <td>
+          {{getDate(student.updatedAt)}}
+        </td>
+      </ng-template>
+      <ng-template [ngIf]="!student.lastOrder">
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>
+          {{getDate(student.updatedAt)}}
+        </td>
+      </ng-template>
     </tr>
   </table>
 

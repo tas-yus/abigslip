@@ -28,59 +28,11 @@
 
   <hr>
 
-  <h6 class="font-weight-bold">ค้นหาเด็ก</h6>
-  <div class="form-group">
-    <input type="text" name="query" class="form-control"
-    placeholder="ชื่อ หรือ นามสกุล" ngModel #query="ngModel">
-  </div>
-  <div class="form-group text-right">
-    <button (click)="search(query.value)" [disabled]="query.value == ''" class="btn btn-primary">Search</button>
-  </div>
-  <div *ngIf="searchResults.length !== 0">
-    <ul>
-      <li *ngFor="let result of searchResults">
-        <a routerLink="/students/{{result._id}}">{{result.firstname}} {{result.lastname}}</a>
-      </li>
-    </ul>
-  </div>
-  <span class="invalid-feedback" *ngIf="errorMessage2">
-    *{{errorMessage2}}
-  </span>
+  <student-search></student-search>
 
   <div *ngIf="authService.isAdmin()">
     <hr>
-    <h6 class="font-weight-bold">ค้นหาสลิป</h6>
-    <div class="form-group">
-      <input type="text" name="queryCode" class="form-control"
-      placeholder="confirmation code" ngModel #queryCode ="ngModel">
-    </div>
-    <div class="form-group">
-      <input type="date" name="queryDate" class="form-control"
-      placeholder="วันที่โอน" ngModel #queryDate="ngModel">
-    </div>
-    <div class="form-group text-right">
-      <button (click)="searchSlip(queryCode.value, queryDate.value)" [disabled]="!queryCode.value && !queryDate.value" class="btn btn-primary">Search</button>
-    </div>
-    <div *ngIf="searchSlipResults.length !== 0">
-      <ul>
-        <div *ngFor="let result of searchSlipResults">
-          <a routerLink="/orders/{{result._id}}/edit" class="{{result.claimed? 'text-success':'text-danger'}}">
-            <p>code: {{result.code}}, วันที่โอน: {{getDate(result.date)}} <i class="fa fa-tag" *ngIf="!result.createdByServer"></i> {{result.void? '(เสีย)' : ''}}</p>
-          </a>
-        </div>
-      </ul>
-    </div>
-    <span class="invalid-feedback" *ngIf="errorMessage3">
-      *{{errorMessage3}}
-    </span>
-
-    <!-- <div *ngIf="searchResults.length !== 0">
-      <ul>
-        <li *ngFor="let result of searchResults">
-          <a routerLink="/students/{{result._id}}">{{result.firstname}} {{result.lastname}}</a>
-        </li>
-      </ul>
-    </div> -->
+    <order-search></order-search>
     <hr>
 
     <h6 class="font-weight-bold">อัพโหลดไฟล์สลิป</h6>
@@ -113,6 +65,16 @@
         </select>
       </div>
       <div class="form-group">
+        <my-date-picker name="mydate1" [placeholder]="placeholder" [options]="myDatePickerOptions"
+                      [(ngModel)]="model1" required>
+        </my-date-picker>
+      </div>
+      <div class="form-group">
+        <my-date-picker name="mydate2" [placeholder]="placeholder" [options]="myDatePickerOptions"
+                      [(ngModel)]="model2" required>
+        </my-date-picker>
+      </div>
+      <!-- <div class="form-group">
         <input type="date" name="from" class="form-control"
         placeholder="จาก" ngModel required #from="ngModel"
         [class.is-invalid]="!from.valid && from.touched">
@@ -127,9 +89,9 @@
         <span class="invalid-feedback" *ngIf="!to.valid && to.touched">
           *โปรดใส่วันสุดท้ายของช่วงที่ต้องการ
         </span>
-      </div>
+      </div> -->
       <div class="form-group text-right">
-        <a href="/{{output}}" *ngIf="output">โหลดไฟล์</a>
+        <a href="/{{output}}" *ngIf="output" download>โหลดไฟล์</a>
         <i style="cursor:pointer; font-size:10px" class="fa fa-times pr-2" *ngIf="output" (click)="output = null"></i>
         <button (click)="onCreateExcel(form)" [disabled]="!form.form.valid" class="btn btn-primary">Get Excel</button>
       </div>

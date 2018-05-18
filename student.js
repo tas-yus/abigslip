@@ -18,6 +18,9 @@ var StudentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Order"
   }
-}, { emitIndexErrors: true });
+}, {
+  timestamps: true,
+  emitIndexErrors: true
+});
 
 module.exports = mongoose.model("Student", StudentSchema);

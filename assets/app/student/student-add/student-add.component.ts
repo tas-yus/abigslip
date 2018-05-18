@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../auth.service';
+import { IMyDpOptions} from 'mydatepicker';
 
 @Component({
     selector: 'student-add',
@@ -12,8 +13,9 @@ import { AuthService } from '../../auth.service';
 export class StudentAddComponent implements OnInit {
   firstname = null;
   lastname = null;
-  date = null;
   type = 1;
+  model1 = null;
+  model2 = null;
   success = null;
   file = null;
   output = null;
@@ -27,6 +29,12 @@ export class StudentAddComponent implements OnInit {
   searchResults = [];
   searchSlipResults = [];
   @ViewChild('fileUpload') fileUpload;
+
+  public myDatePickerOptions: IMyDpOptions = {
+      dateFormat: 'dd/mm/yyyy',
+   };
+
+  private placeholder: string = " วัน/เดือน/ปี";
 
   constructor(private http: HttpClient, private router: Router, public authService: AuthService) {}
 
@@ -132,8 +140,8 @@ export class StudentAddComponent implements OnInit {
   }
 
   onCreateExcel(form: NgForm) {
-    const from = form.value.from;
-    const to = form.value.to;
+    const from = this.model1.formatted;
+    const to = this.model2.formatted;
     const type = this.type;
     this.http.post<any>(`/api/excel?token=${this.authService.getToken()}`, {from, to, type}).subscribe((data) => {
       this.type = 1;
@@ -147,17 +155,17 @@ export class StudentAddComponent implements OnInit {
     });
   }
 
-  getDate(date) {
-    var newDate = new Date(date).toLocaleDateString();
-    var parsedDate = newDate.split("/");
-    if (Number(parsedDate[0]) < 10) {
-      parsedDate[0] = "0" + parsedDate[0]
-    }
-    if (Number(parsedDate[1]) < 10) {
-      parsedDate[1] = "0" + parsedDate[1]
-    }
-    return `${parsedDate[2]}-${parsedDate[0]}-${parsedDate[1]}`;
-  }
+  // getDate(date) {
+  //   var newDate = new Date(date).toLocaleDateString();
+  //   var parsedDate = newDate.split("/");
+  //   if (Number(parsedDate[0]) < 10) {
+  //     parsedDate[0] = "0" + parsedDate[0]
+  //   }
+  //   if (Number(parsedDate[1]) < 10) {
+  //     parsedDate[1] = "0" + parsedDate[1]
+  //   }
+  //   return `${parsedDate[2]}-${parsedDate[0]}-${parsedDate[1]}`;
+  // }
 
   updateForm(e) {
     this.type = e.srcElement.value;

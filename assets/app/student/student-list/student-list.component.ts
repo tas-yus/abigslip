@@ -21,7 +21,7 @@ export class StudentListComponent implements OnInit {
   constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, public authService: AuthService) {}
 
   ngOnInit() {
-    this.getStudents()
+    this.getStudents();
   }
 
   selectFilter(e) {
@@ -32,7 +32,7 @@ export class StudentListComponent implements OnInit {
   getStudents() {
     this.loading = true;;
     this.http.get<any>(`/api/students?token=${this.authService.getToken()}&&limit=${this.limit}`).subscribe((data) => {
-      this.students = this.filterStudents(data.students);
+      this.students = data.students;
       this.count = data.count;
       this.loading = false;
     }, (err) => {
@@ -41,10 +41,19 @@ export class StudentListComponent implements OnInit {
   }
 
   getDate(date) {
-    return new Date(date).toLocaleString();
+    var newDate = new Date(date)
+    return this.updateDate(newDate.toLocaleDateString()) +", "+ newDate.toLocaleTimeString();
   }
 
-  filterStudents(array) {
-    return array.filter((o) => { return o.lastOrder });
+  updateDate(date) {
+    var newDate = new Date(date).toLocaleDateString();
+    var parsedDate = newDate.split("/");
+    if (Number(parsedDate[0]) < 10) {
+      parsedDate[0] = "0" + parsedDate[0]
+    }
+    if (Number(parsedDate[1]) < 10) {
+      parsedDate[1] = "0" + parsedDate[1]
+    }
+    return `${parsedDate[1]}-${parsedDate[0]}-${parsedDate[2]}`;
   }
 }

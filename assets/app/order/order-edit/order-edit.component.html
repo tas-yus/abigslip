@@ -3,7 +3,7 @@
   <div *ngIf="order" class="py-2">
     <p class="{{types[order.type-1]}}"><span class="font-weight-bold">Code {{types[order.type-1]}}:</span> {{order.code}} <i class="fa fa-tag" *ngIf="!order.createdByServer"></i> {{order.void? '(เสีย)' : ''}}</p>
     <p *ngIf="order.claimedBy"><span class="font-weight-bold">ชื่อ-สกุล: </span>{{order.claimedBy.firstname}} {{order.claimedBy.lastname}}</p>
-    <p><span class="font-weight-bold">วันที่ (ปี-เดือน-วัน):</span> {{dateString}}</p>
+    <p><span class="font-weight-bold">วันที่ (วัน-เดือน-ปี):</span> {{getDate(order.date)}}</p>
     <p><span class="font-weight-bold">รหัสคอร์ส:</span> {{order.courseCode}}</p>
     <p><span class="font-weight-bold">ราคา:</span> {{order.price}}</p>
     <p><span class="font-weight-bold">เคลม:</span>
@@ -31,15 +31,10 @@
           placeholder="ราคาคอร์ส" [(ngModel)]="ngOrder.price">
         </div>
 
-        <div>
-          <div class="form-group">
-            <input type="date" name="dateString" class="form-control"
-            placeholder="วันที่โอน" [(ngModel)]="dateString">
-          </div>
-          <!-- <div class="form-group">
-            <input type="text" name="timeString" class="form-control"
-            placeholder="เวลาโอน" [(ngModel)]="timeString">
-          </div> -->
+        <div class="form-group">
+          <my-date-picker name="mydate" [options]="myDatePickerOptions"
+                        [(ngModel)]="model" required>
+          </my-date-picker>
         </div>
 
 
