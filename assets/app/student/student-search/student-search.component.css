@@ -1,0 +1,18 @@
+.form {
+  width: 75%;
+  min-width: 300px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.invalid-feedback {
+  display: block;
+}
+
+.valid-feedback {
+  display: block;
+}
+
+a {
+  text-decoration: none;
+}

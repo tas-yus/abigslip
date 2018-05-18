@@ -65,6 +65,7 @@ router.post('/api/students/:id/courses', (req, res) => {
             return res.status(400).send({message: "something's wrong"});
           }
           student.orders.push(order._id);
+          student.lastOrder = order._id;
           student.save((err, student) => {
             if (err) {
               console.log(err);
@@ -84,6 +85,7 @@ router.post('/api/students/:id/courses', (req, res) => {
             return res.status(400).send({message: "something's wrong"});
           }
           student.orders.push(order._id);
+          student.lastOrder = order._id;
           student.save((err, student) => {
             if (err) {
               console.log(err);
@@ -118,6 +120,22 @@ router.get("/api/students/search", (req, res) => {
   });
 });
 
+router.get("/api/students", (req, res) => {
+  var limit = req.query.limit? Number(req.query.limit) : 100;
+  Student.find({}).populate({path: 'lastOrder', options: { sort: { 'createdAt': -1 } } })
+  .limit(limit).exec((err, students) => {
+    if (err) {
+      return res.status(400).send({message: "something's wrong "});
+    }
+    Student.count({}, (err, count) => {
+      if (err) {
+        return res.status(400).send({message: "something's wrong "});
+      }
+      res.status(200).send({students, count});
+    })
+  });
+});
+
 router.get('/api/students/:id', (req, res) => {
   Student.findById(req.params.id).populate("orders").then((student) => {
     if (!student) {
@@ -135,6 +153,7 @@ router.post('/api/students', (req, res) => {
     firstname: String(req.body.firstname).trim(),
     lastname: String(req.body.lastname).trim(),
   }
+  console.log(queryObject);
   Student.findOne(queryObject, (err, oldStudent) => {
     if (err) {
       console.log(err);

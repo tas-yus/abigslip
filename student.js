@@ -9,16 +9,15 @@ var StudentSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  courses: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Course",
-    default: []
-  }],
   orders: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Order",
     default: []
-  }]
+  }],
+  lastOrder: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Order"
+  }
 }, { emitIndexErrors: true });
 
 module.exports = mongoose.model("Student", StudentSchema);

@@ -1,0 +1,50 @@
+<div class="d-flex justify-content-between">
+  <h3>Student Page
+    <i *ngIf="loading" class="fa fa-spin fa-spinner fa-fw pl-2"></i>
+  </h3>
+  <i style="cursor:pointer" (click)="search = !search" class="fa fa-search fa-2x"></i>
+</div>
+<student-search *ngIf="search"></student-search>
+<div class="container my-4" *ngIf="students.length !== 0">
+  <div class="d-flex justify-content-between">
+    <h6 class="font-weight-bold">รายชื่อเด็กอัพเดทล่าสุด (จาก {{count}} คน ในฐานข้อมูล)</h6>
+    <select (change)="selectFilter($event)" id="">
+      <option value="">เลือกจำนวนผลลัพธ์</option>
+      <option value="100">100</option>
+      <option value="200">200</option>
+      <option value="300">300</option>
+    </select>
+  </div>
+  <table class="table my-2 text-center">
+    <thead class="thead">
+      <tr>
+        <th rowspan="2">#</th>
+        <th rowspan="2">ชื่อ-สกุล</th>
+        <th colspan="5">รายการล่าสุด</th>
+      </tr>
+      <tr>
+        <td>รูปแบบ</td>
+        <td>รหัสสลิป</td>
+        <td>รหัสคอร์ส</td>
+        <td>ราคาคอร์ส</td>
+        <td>match กับระบบ</td>
+        <td>เวลา</td>
+      </tr>
+    </thead>
+    <tr *ngFor="let student of students; let i = index">
+      <td>{{i + 1}}</td>
+      <a routerLink="/students/{{student._id}}"><td>{{student.firstname}} {{student.lastname}}</td></a>
+      <td class="font-weight-bold {{types[student.lastOrder.type-1]}}">{{types[student.lastOrder.type-1]}}</td>
+      <td>{{student.lastOrder.code}}</td>
+      <td>{{student.lastOrder.courseCode}}</td>
+      <td>{{student.lastOrder.price}}</td>
+      <td>
+        <i class="fa {{student.lastOrder.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i>
+      </td>
+      <td>
+        {{getDate(student.lastOrder.createdAt)}}
+      </td>
+    </tr>
+  </table>
+
+</div>

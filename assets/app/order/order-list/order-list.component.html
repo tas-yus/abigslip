@@ -1,0 +1,47 @@
+<div class="d-flex justify-content-between">
+  <h3>Slip Page     
+    <i *ngIf="loading" class="fa fa-spin fa-spinner fa-fw pl-2"></i>
+  </h3>
+  <i style="cursor:pointer" (click)="search = !search" class="fa fa-search fa-2x"></i>
+</div>
+<order-search *ngIf="search"></order-search>
+<div class="container my-4" *ngIf="orders.length !== 0">
+  <div class="d-flex justify-content-between">
+    <h6 class="font-weight-bold">รายชื่อสลิปอัพเดทล่าสุด (จาก {{count}} สลิป)</h6>
+    <select (change)="selectFilter($event)" id="">
+      <option value="">เลือกจำนวนผลลัพธ์</option>
+      <option value="100">100</option>
+      <option value="500">500</option>
+      <option value="1000">1000</option>
+      <option value="2000">2000</option>
+      <option value="3000">3000</option>
+    </select>
+  </div>
+  <table class="table my-2 text-center">
+    <thead class="thead">
+      <tr>
+        <th rowspan>#</th>
+        <td>รูปแบบ</td>
+        <td>รหัสสลิป</td>
+        <td>รหัสคอร์ส</td>
+        <td>ราคาคอร์ส</td>
+        <td>match กับระบบ</td>
+        <td>เวลา</td>
+      </tr>
+    </thead>
+    <tr *ngFor="let order of orders; let i = index">
+      <td>{{i + 1}}</td>
+      <td class="font-weight-bold {{types[order.type-1]}}">{{types[order.type-1]}}</td>
+      <td>{{order.code}}</td>
+      <td>{{order.courseCode}}</td>
+      <td>{{order.price}}</td>
+      <td>
+        <i class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i>
+      </td>
+      <td>
+        {{order.claimed? getDate(order.claimedAt): getDate(order.createdAt)}}
+      </td>
+    </tr>
+  </table>
+
+</div>

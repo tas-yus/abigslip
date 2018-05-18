@@ -33,6 +33,20 @@ router.use('/api/', (req, res, next) => {
   });
 });
 
+router.get('/api/orders', allowAdmin, (req, res) => {
+  var limit = req.query.limit? Number(req.query.limit) : 100;
+  Order.find({}).populate("claimedBy").sort({claimedAt: 1}).limit(limit).exec((err, orders) => {
+    if (err) {
+      return res.status(400).send({message: "something's wrong "});
+    }
+    Order.count({}, (err, count) => {
+      if (err) {
+        return res.status(400).send({message: "something's wrong "});
+      }
+      res.status(200).send({orders, count});
+    });
+  });
+});
 
 router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
   var queryObject = {
@@ -60,8 +74,8 @@ router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
         if (err) {
           return res.status(400).send({message: "something's wrong"});
         }
-        student.orders = student.orders.filter((o) => { return !o.equals(req.body.oldId) });
         student.orders.push(order._id);
+        student.lastOrder = order._id;
         student.save((err) => {
           if (err) {
             return res.status(400).send({message: "something's wrong"});
@@ -184,16 +198,22 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
             countAdded++;
             if (order) {
               countMatched++;
-              order.claimed = true;
-              order.save((err, order) => {
+              Student.findByIdAndUpdate(order.claimedBy, {lastOrder: order._id}, (err) => {
                 if (err) {
                   console.log(err);
                   return res.status(400).send({message: "something's wrong"});
                 }
-                count++;
-                if (count === worksheet.actualRowCount) {
-                  callback();
-                }
+                order.claimed = true;
+                order.save((err, order) => {
+                  if (err) {
+                    console.log(err);
+                    return res.status(400).send({message: "something's wrong"});
+                  }
+                  count++;
+                  if (count === worksheet.actualRowCount) {
+                    callback();
+                  }
+                });
               });
             } else {
               queryObject.createdByServer = true;

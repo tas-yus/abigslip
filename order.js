@@ -1,7 +1,10 @@
 var mongoose = require("mongoose");
 
 var OrderSchema = new mongoose.Schema({
-  date: Date,
+  date: {
+    type: Date,
+    required: true
+  },
   code: {
     type: String,
     required: true
@@ -33,7 +36,9 @@ var OrderSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  claimedAt: Date,
+  claimedAt: {
+    type: Date,
+  },
   claimed: {
     type: Boolean,
     default: false
