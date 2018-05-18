@@ -8,14 +8,16 @@
 <div class="container my-4" *ngIf="orders.length !== 0">
   <div class="d-flex justify-content-between">
     <h6 class="font-weight-bold">รายชื่อสลิปอัพเดทล่าสุด (จาก {{count}} สลิป)</h6>
-    <select (change)="selectFilter($event)" id="">
-      <option value="">เลือกจำนวนผลลัพธ์</option>
-      <option value="100">100</option>
-      <option value="500">500</option>
-      <option value="1000">1000</option>
-      <option value="2000">2000</option>
-      <option value="3000">3000</option>
-    </select>
+    <div>
+      <select (change)="selectFilter($event)" id="">
+        <option value="">เลือกจำนวนผลลัพธ์</option>
+        <option value="100">100</option>
+        <option value="500">500</option>
+        <option value="1000">1000</option>
+        <option value="2000">2000</option>
+        <option value="3000">3000</option>
+      </select>
+    </div>
   </div>
   <table class="table my-2 text-center">
     <thead class="thead">

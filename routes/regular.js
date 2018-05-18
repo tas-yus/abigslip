@@ -122,7 +122,7 @@ router.get("/api/students/search", (req, res) => {
 
 router.get("/api/students", (req, res) => {
   var limit = req.query.limit? Number(req.query.limit) : 100;
-  Student.find({}).populate({path: 'lastOrder', options: { sort: { 'updatedAt': -1 } } })
+  Student.find({}).populate('lastOrder').sort({updatedAt: -1})
   .limit(limit).exec((err, students) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});

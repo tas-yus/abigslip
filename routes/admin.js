@@ -33,7 +33,7 @@ router.use('/api/', (req, res, next) => {
 
 router.get('/api/orders', allowAdmin, (req, res) => {
   var limit = req.query.limit? Number(req.query.limit) : 100;
-  Order.find({}).populate("claimedBy").sort({updatedAt: 1}).limit(limit).exec((err, orders) => {
+  Order.find({}).populate("claimedBy").sort({updatedAt: -1}).limit(limit).exec((err, orders) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});
     }
