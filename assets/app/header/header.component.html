@@ -9,24 +9,24 @@
 
   <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-      <form class="form-inline my-2 my-lg-0">
-        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-          <ng-template [ngIf]="authService.isAuthenticated()">
-            <li class="nav-item">
-              <a class="nav-link text-light" routerLink="/home">{{authService.isAdmin()? '':'สาขา'}} {{authService.getBranchString()}}</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-light" routerLink="/students">Students</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-light" *ngIf="authService.isAdmin()" routerLink="/orders">Slips</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-light" style="cursor: pointer" (click)="onLogoutUser()">Logout</a>
-            </li>
-          </ng-template>
-        </ul>
-      </form>
     </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <ng-template [ngIf]="authService.isAuthenticated()">
+          <li class="nav-item">
+            <a class="nav-link text-light" routerLink="/home">{{authService.isAdmin()? '':'สาขา'}} {{authService.getBranchString()}}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-light" routerLink="/students">Students</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-light" *ngIf="authService.isAdmin()" routerLink="/orders">Slips</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-light" style="cursor: pointer" (click)="onLogoutUser()">Logout</a>
+          </li>
+        </ng-template>
+      </ul>
+    </form>
   </div>
 </nav>
