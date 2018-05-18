@@ -142,37 +142,37 @@ var users = [
   }
 ];
 
-Order.remove({}).then(() => {
-  console.log("orders removed");
-}).catch((err) => {
-  console.log(err);
-});
-
-Student.remove({}).then(() => {
-  console.log("students removed");
-}).catch((err) => {
-  console.log(err);
-});
-
-User.remove({}).then(() => {
-  async.forEach(users, (user, callback) => {
-    user.password = bcrypt.hashSync(user.password, 10);
-    var newUser = new User(user);
-    newUser.save((err) => {
-      if (err) {
-        console.log(err);
-      }
-      console.log("user created");
-      callback();
-    })
-  }, (err) => {
-    if (err) {
-      console.log(err);
-    }
-  });
-}).catch((err) => {
-  console.log(err);
-});
+// Order.remove({}).then(() => {
+//   console.log("orders removed");
+// }).catch((err) => {
+//   console.log(err);
+// });
+//
+// Student.remove({}).then(() => {
+//   console.log("students removed");
+// }).catch((err) => {
+//   console.log(err);
+// });
+//
+// User.remove({}).then(() => {
+//   async.forEach(users, (user, callback) => {
+//     user.password = bcrypt.hashSync(user.password, 10);
+//     var newUser = new User(user);
+//     newUser.save((err) => {
+//       if (err) {
+//         console.log(err);
+//       }
+//       console.log("user created");
+//       callback();
+//     })
+//   }, (err) => {
+//     if (err) {
+//       console.log(err);
+//     }
+//   });
+// }).catch((err) => {
+//   console.log(err);
+// });
 
 
 module.exports = app;
