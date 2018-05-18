@@ -13,6 +13,7 @@ export class OrderSearchComponent implements OnInit {
   loading = false;
   errorMessage3 = null;
   searchSlipResults = [];
+  date = null;
 
   constructor(private http: HttpClient, private router: Router, public authService: AuthService) {}
 
@@ -38,5 +39,9 @@ export class OrderSearchComponent implements OnInit {
         this.errorMessage3 = null;
       }, 3000);
     });
+  }
+
+  getDate(date) {
+    return new Date(date).toLocaleDateString();
   }
 }
