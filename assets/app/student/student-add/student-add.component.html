@@ -41,8 +41,8 @@
         <input type="file" name="slip" class="form-control-file" (change)="updateFile($event, file)" #fileUpload ngModel>
         <div>
           <i *ngIf="loading" class="fa fa-spin fa-spinner fa-fw"></i>
-          <button *ngIf="file" (click)="onReset()" class="btn btn-sm btn-danger">Reset</button>
-          <button *ngIf="file" (click)="onUpload()" class="btn btn-sm btn-warning">Upload</button>
+          <button *ngIf="file" [disabled]="disabled" (click)="onReset()" class="btn btn-sm btn-danger">Reset</button>
+          <button *ngIf="file" [disabled]="disabled" (click)="onUpload()" class="btn btn-sm btn-warning">Upload</button>
         </div>
       </div>
       <span class="invalid-feedback" *ngIf="errorMessage4">

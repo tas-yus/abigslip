@@ -20,6 +20,7 @@ export class StudentAddComponent implements OnInit {
   file = null;
   output = null;
   loading = false;
+  disabled = false;
   errorMessage1 = null;
   errorMessage2 = null;
   errorMessage3 = null;
@@ -104,15 +105,18 @@ export class StudentAddComponent implements OnInit {
     const formData: any = new FormData();
     formData.append("file", this.file);
     this.loading = true;
+    this.disabled = true;
     this.http.post<any>(`/api/slips/upload?token=${this.authService.getToken()}`, formData).subscribe((data) =>{
       this.http.post<any>(`/api/orders/parse?token=${this.authService.getToken()}`, {filename: data.filename}).subscribe((data) => {
         this.loading = false;
+        this.disabled = false;
         this.successMessage = `อัพเดทฐานข้อมูลสำเร็จ! // เพิ่ม slip ${data.countAdded} รายการ // match ${data.countMatched} รายการ`
         this.onReset();
         setTimeout(() => {
           this.successMessage = null;
         }, 3000)
       }, (err) => {
+        this.disabled = false;
         this.loading = false;
         this.onReset();
         this.errorMessage4 = err.error.message;
@@ -121,6 +125,7 @@ export class StudentAddComponent implements OnInit {
         }, 3000);
      });
     }, (err) => {
+      this.disabled = false;
       this.loading = false;
       this.onReset();
       this.errorMessage4 = err.error.message;

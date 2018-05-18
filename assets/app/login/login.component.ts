@@ -34,7 +34,10 @@ export class LoginComponent implements OnInit {
       localStorage.setItem('userId', data.userId);
       this.router.navigate(['/home']);
     }, (err) => {
-      console.log(err);
+      this.errMessage = err.error.message;
+      setTimeout(() => {
+        this.errMessage = null;
+      }, 3000);
     })
   }
 

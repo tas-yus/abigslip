@@ -9,7 +9,7 @@
   <div class="d-flex justify-content-between">
     <h6 class="font-weight-bold">รายชื่อเด็กอัพเดทล่าสุด (จาก {{count}} คน ในฐานข้อมูล)</h6>
     <div>
-      <label><i class="fas fa-fire CS"></i> = เด็กใหม่ | </label>
+      <label><i class="fa fa-bolt CS"></i> = เด็กใหม่ | </label>
       <select (change)="selectFilter($event)" id="">
         <option value="">เลือกจำนวนผลลัพธ์</option>
         <option value="100">100</option>
@@ -35,7 +35,7 @@
       </tr>
     </thead>
     <tr *ngFor="let student of students; let i = index">
-      <td class="font-weight-bold">{{i + 1}} <sup><i *ngIf="!student.lastOrder" class="fas fa-fire CS"></i></sup></td>
+      <td class="font-weight-bold">{{i + 1}} <sup><i *ngIf="!student.lastOrder" class="fa fa-bolt CS"></i></sup></td>
       <a routerLink="/students/{{student._id}}"><td>{{student.firstname}} {{student.lastname}}</td></a>
       <ng-template [ngIf]="student.lastOrder">
         <td class="font-weight-bold {{types[student.lastOrder.type-1]}}">{{types[student.lastOrder.type-1]}}</td>
