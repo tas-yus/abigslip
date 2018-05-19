@@ -73,7 +73,7 @@ export class OrderEditComponent implements OnInit {
     if (Number(parsedDate[1]) < 10) {
       parsedDate[1] = "0" + parsedDate[1]
     }
-    return `${parsedDate[2]}-${parsedDate[0]}-${parsedDate[1]}`;
+    return `${parsedDate[1]}-${parsedDate[0]}-${parsedDate[2]}`;
   }
 
   onEditOrder(form: NgForm) {
