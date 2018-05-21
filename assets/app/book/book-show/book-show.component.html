@@ -1,0 +1,43 @@
+<ng-template [ngIf]="book">
+  <h4>{{book.title}}</h4>
+  <hr>
+  <div class="container my-4">
+    <div class="d-flex justify-content-between">
+      <p><span class="font-weight-bold">ใช้ไป:</span> {{book.orders.length}} เล่ม</p>
+      <div class="form-group d-flex">
+        <select *ngIf="authService.isAdmin()" (change)="getBook(branch)" class="form-control" [(ngModel)]="branch">
+          <option value="0">ทุกสาขา</option>
+          <option *ngFor="let number of [1,2,3,4,5,6,7,8,9,10,11,12,13,14]" value="{{number}}">{{branchArray[number]}}</option>
+        </select>
+        <select (change)="getBook(branch)" class="form-control" [(ngModel)]="month">
+          <option *ngFor="let number of [0,1,2,3,4,5,6,7,8,9,10,11]" value="{{number}}">{{months[number]}}</option>
+        </select>
+        <select (change)="getBook(branch)" class="form-control" [(ngModel)]="year">
+          <option *ngFor="let number of [0,1,2,3,4]" value="{{getYear(number)}}">{{getYear(number)}}</option>
+        </select>
+      </div>
+    </div>
+    <p><span class="font-weight-bold">ข้อมูลการจ่ายหนังสือ: </span>{{book.orders.length !== 0? '': 'ยังไม่มีการออกหนังสือเล่มนี้ตามเวลาที่ระบุ'}}</p>
+    <table *ngIf="book.orders.length !== 0" class="form table my-2 text-center">
+      <thead class="thead">
+        <tr>
+          <th>#</th>
+          <th>ชื่อเด็ก</th>
+          <th>รูปแบบ</th>
+          <th>โค้ดสลิป</th>
+          <th>สาขา</th>
+          <th>หนังสือออกเมื่อ</th>
+        </tr>
+      </thead>
+      <tr *ngFor="let order of book.orders; let i = index">
+        <td class="font-weight-bold">{{i + 1}}</td>
+        <td><a routerLink="/students/{{order.claimedBy._id}}">{{order.claimedBy.firstname}} {{order.claimedBy.lastname}}</a></td>
+        <td class="{{types[order.type-1]}} font-weight-bold">{{types[order.type-1]}}</td>
+        <td><a routerLink="/orders/{{order._id}}/edit">{{order.code}}</a></td>
+        <td>{{branchArray[order.branch]}}</td>
+        <td>{{getDate(order.updatedAt)}}</td>
+      </tr>
+    </table>
+  </div>
+
+</ng-template>

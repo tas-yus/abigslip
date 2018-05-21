@@ -17,6 +17,7 @@ import { AuthService } from '../auth.service';
 export class LoginComponent implements OnInit {
   errMessage: String;
   successMessage: String;
+  disabled = false;
 
   constructor(private http: HttpClient, private router: Router, public authService: AuthService) {}
 
@@ -29,11 +30,13 @@ export class LoginComponent implements OnInit {
   onLoginUser(form: NgForm) {
     const username = form.value.username;
     const password = form.value.password;
+    this.disabled = true;
     this.http.post<any>('/login', {username, password}).subscribe((data) => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.userId);
       this.router.navigate(['/home']);
     }, (err) => {
+      this.disabled = false;
       this.errMessage = err.error.message;
       setTimeout(() => {
         this.errMessage = null;

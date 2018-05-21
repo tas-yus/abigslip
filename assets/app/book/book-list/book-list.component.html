@@ -1,0 +1,36 @@
+<div class="d-flex justify-content-between">
+  <h4>Book Page
+    <i *ngIf="loading" class="fa fa-spin fa-spinner fa-fw pl-2"></i>
+  </h4>
+</div>
+<div class="container my-4" *ngIf="books.length !== 0">
+  <div class="d-flex justify-content-between">
+    <h6 class="font-weight-bold">รายชื่อหนังสือ {{authService.isAdmin()? '': 'สาขา ' + authService.getBranchString()}}</h6>
+    <div class="form-group d-flex">
+      <select *ngIf="authService.isAdmin()" (change)="getBooks(branch)" class="form-control" [(ngModel)]="branch">
+        <option value="0">ทุกสาขา</option>
+        <option *ngFor="let number of [1,2,3,4,5,6,7,8,9,10,11,12,13,14]" value="{{number}}">{{branchArray[number]}}</option>
+      </select>
+      <select (change)="getBooks(branch)" class="form-control" [(ngModel)]="month">
+        <option *ngFor="let number of [0,1,2,3,4,5,6,7,8,9,10,11]" value="{{number}}">{{months[number]}}</option>
+      </select>
+      <select (change)="getBooks(branch)" class="form-control" [(ngModel)]="year">
+        <option *ngFor="let number of [0,1,2,3,4]" value="{{getYear(number)}}">{{getYear(number)}}</option>
+      </select>
+    </div>
+  </div>
+  <table class="form table my-2 text-center">
+    <thead class="thead">
+      <tr>
+        <th>#</th>
+        <th>หนังสือ</th>
+        <th>จำนวนใช้</th>
+      </tr>
+    </thead>
+    <tr *ngFor="let book of books; let i = index">
+      <td class="font-weight-bold">{{i + 1}}</td>
+      <td style="cursor:pointer" routerLink="/books/{{book._id}}">{{book.title}}</td>
+      <td>{{book.orders.length}}</td>
+    </tr>
+  </table>
+</div>

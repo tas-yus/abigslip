@@ -2,33 +2,43 @@
   <h6 class="font-weight-bold">เพิ่มเด็ก</h6>
   <form #f="ngForm">
       <div class="form-group">
-        <input type="text" name="firstname" class="form-control"
+        <input type="text" (input)="search(firstname.value)" name="firstname" class="form-control"
         placeholder="ชื่อ" ngModel required #firstname="ngModel"
         [class.is-invalid]="!firstname.valid && firstname.touched">
-        <span class="invalid-feedback" *ngIf="!firstname.valid && firstname.touched">
+        <!-- <span class="invalid-feedback" *ngIf="!firstname.valid && firstname.touched">
           *โปรดใส่ชื่อ
-        </span>
+        </span> -->
       </div>
       <div class="form-group">
-        <input type="text" name="lastname" class="form-control"
+        <input type="text" (input)="search(lastname.value)" name="lastname" class="form-control"
         placeholder="นามสกุล" ngModel required #lastname="ngModel"
         [class.is-invalid]="!lastname.valid && lastname.touched">
-        <span class="invalid-feedback" *ngIf="!lastname.valid && lastname.touched">
+        <!-- <span class="invalid-feedback" *ngIf="!lastname.valid && lastname.touched">
           *โปรดใส่นามสกุล
-        </span>
+        </span> -->
       </div>
 
       <div class="form-group text-right">
           <button (click)="onAddStudent(f)" [disabled]="!f.form.valid" class="btn btn-primary">Add</button>
       </div>
-      <span class="invalid-feedback" *ngIf="errorMessage1">
+      <span class="invalid-feedback my-4" *ngIf="errorMessage1">
         *{{errorMessage1}}
+      </span>
+      <div *ngIf="searchResults.length !== 0">
+        <h6 class="font-weight-bold">รายชื่อใกล้เคียง <i class="fa fa-street-view" aria-hidden="true"></i></h6>
+        <ul>
+          <li *ngFor="let result of searchResults">
+            <a routerLink="/students/{{result._id}}">{{result.firstname}} {{result.lastname}}</a>
+          </li>
+        </ul>
+      </div>
+      <span class="valid-feedback" *ngIf="errorMessage2">
+        *{{errorMessage2}} <i class="fa fa-check text-success"></i>
       </span>
   </form>
 
-  <hr>
-
-  <student-search></student-search>
+  <!-- <hr>
+  <student-search></student-search> -->
 
   <div *ngIf="authService.isAdmin()">
     <hr>

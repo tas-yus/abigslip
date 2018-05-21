@@ -54,7 +54,7 @@ export class OrderEditComponent implements OnInit {
       };
       this.type = data.type;
       var date = new Date(data.date);
-      this.model = { date: { year: date.getFullYear(), month: date.getMonth()+1, day: date.getDate() } }
+      this.model = { date: { year: date.getFullYear(), month: date.getMonth()+1, day: date.getDate() }, formatted: `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}` }
     }, (err) => {
       this.router.navigate(['/home']);
     });

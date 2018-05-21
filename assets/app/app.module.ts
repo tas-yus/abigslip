@@ -11,6 +11,8 @@ import { StudentShowComponent } from "./student/student-show/student-show.compon
 import { StudentEditComponent } from "./student/student-edit/student-edit.component";
 import { StudentListComponent } from "./student/student-list/student-list.component";
 import { StudentSearchComponent } from "./student/student-search/student-search.component";
+import { BookListComponent } from "./book/book-list/book-list.component";
+import { BookShowComponent } from "./book/book-show/book-show.component";
 import { OrderEditComponent } from './order/order-edit/order-edit.component';
 import { OrderListComponent } from './order/order-list/order-list.component';
 import { OrderSearchComponent } from './order/order-search/order-search.component';
@@ -34,7 +36,9 @@ import { AuthGuard } from './auth-guard.service';
         LoginComponent,
         HeaderComponent,
         StudentListComponent,
-        OrderListComponent
+        OrderListComponent,
+        BookListComponent,
+        BookShowComponent
     ],
     imports: [BrowserModule, AppRoutingModule, FormsModule,
       HttpClientModule, MyDatePickerModule],

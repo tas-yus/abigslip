@@ -2,7 +2,7 @@
 <div class="form my-2">
   <div *ngIf="order" class="py-2">
     <p class="{{types[order.type-1]}}"><span class="font-weight-bold">Code {{types[order.type-1]}}:</span> {{order.code}} <i class="fa fa-tag" *ngIf="!order.createdByServer"></i> {{order.void? '(เสีย)' : ''}}</p>
-    <p *ngIf="order.claimedBy"><span class="font-weight-bold">ชื่อ-สกุล: </span>{{order.claimedBy.firstname}} {{order.claimedBy.lastname}}</p>
+    <p *ngIf="order.claimedBy"><span class="font-weight-bold">ชื่อ-สกุล: </span><a routerLink="/students/{{order.claimedBy._id}}">{{order.claimedBy.firstname}} {{order.claimedBy.lastname}}</a></p>
     <p><span class="font-weight-bold">วันที่ (วัน-เดือน-ปี):</span> {{getDate(order.date)}}</p>
     <p><span class="font-weight-bold">รหัสคอร์ส:</span> {{order.courseCode}}</p>
     <p><span class="font-weight-bold">ราคา:</span> {{order.price}}</p>
@@ -37,10 +37,9 @@
           </my-date-picker>
         </div>
 
-
           <div class="form-group">
-            <select (change)="updateForm($event)" name="type" [(ngModel)]="order.type" class="form-control" id="">
-              <option value="3">Customer Service</option>
+            <select (change)="updateForm($event)" name="type" [(ngModel)]="ngOrder.type" class="form-control" id="">
+              <option value="3">Counter Service</option>
               <option value="1">กรุงไทย KTB</option>
               <option value="2">ออมสิน GSB</option>
             </select>
@@ -57,5 +56,15 @@
           </span>
       </form>
     </div>
+  </div>
+
+  <div *ngIf="order.course">
+    <hr>
+    <!-- <p class="font-weight-bold">รายละเอียดการสมัคร</p> -->
+    <p><span class="font-weight-bold"> คอร์ส:</span> {{order.course.title}}</p>
+    <p><span class="font-weight-bold">หนังสือ:</span>
+      <li *ngFor="let book of order.books">{{book.title}}</li>
+      <li *ngIf="order.books.length === 0">คอร์สนี้ไม่มีหนังสือ</li>
+    </p>
   </div>
 </div>

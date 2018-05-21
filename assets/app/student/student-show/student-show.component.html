@@ -8,7 +8,7 @@
         <div class="form-group">
           <select (change)="updateForm($event)" #selectMode class="form-control" id="">
             <option value="">เลือกรูปแบบการชำระเงิน</option>
-            <option value="3">Customer Service</option>
+            <option value="3">Counter Service</option>
             <option value="1">กรุงไทย KTB</option>
             <option value="2">ออมสิน GSB</option>
           </select>
@@ -35,12 +35,29 @@
           </div>
 
           <div class="form-group">
-            <input type="number" name="price" class="form-control"
+            <input type="number" (change)="changePrice($event)" name="price" class="form-control"
             placeholder="ราคาคอร์ส" ngModel required #price="ngModel"
             [class.is-invalid]="!price.valid && price.touched">
             <span class="invalid-feedback" *ngIf="!price.valid && price.touched">
               *โปรดใส่รหัสคอร์ส
             </span>
+          </div>
+
+          <div class="form-group">
+            <select (change)="onSelectCourse()" *ngIf="courses.length !== 0" name="course" [(ngModel)]="course" class="form-control">
+              <option value="">โปรดเลือกคอร์ส</option>
+              <option *ngFor="let course of courses" value="{{course._id}}">{{course.title}}</option>
+            </select>
+          </div>
+
+          <div class="form-group" *ngIf="course && books.length >= 1">
+            <p>โปรดเลือกหนังสือ {{getCourse(course).numBook}} รายการ</p>
+            <div *ngFor="let book of books">
+              <input (change)="onSelectBooks($event)" type="checkbox" value="{{book._id}}"
+              [disabled]="selectedBooks.length >= getCourse(course).numBook && !cancel">
+              {{book.title}}
+            </div>
+            <!-- <button (click)="cancel = !cancel; input.checked = false" class="btn btn-sm btn-light">ยกเลิก</button> -->
           </div>
 
           <div class="form-group">
@@ -55,7 +72,8 @@
 
 
         <div class="form-group text-right">
-            <button (click)="onAddCourse(f); f.reset()" [disabled]="!f.form.valid || (type != 1 && type != 2 && type != 3) || !date" class="btn btn-primary">Add</button>
+            <button (click)="onAddCourse(f); f.reset()" [disabled]="!f.form.valid || (type != 1 && type != 2 && type != 3)
+            || !date || !course || selectedBooks.length !== getCourse(course).numBook" class="btn btn-primary">Add</button>
         </div>
         <span class="invalid-feedback" *ngIf="errMessage">
           *{{errMessage}}

@@ -65,16 +65,17 @@ export class StudentAddComponent implements OnInit {
   // }
 
   search(value) {
-    var query = value === ''? '' : `&&name=${value}`;
+    var query = value === ''? '&&name=""' : `&&name=${value}`;
     if (value) {
       this.http.get<any[]>(`/api/students/search?token=${this.authService.getToken()}` + query).subscribe((data) => {
+        this.errorMessage2 = null;
         this.searchResults = data;
       }, (err) => {
         this.searchResults = [];
         this.errorMessage2 = err.error.message;
-        setTimeout(() => {
-          this.errorMessage2 = null;
-        }, 3000);
+        // setTimeout(() => {
+        //   this.errorMessage2 = null;
+        // }, 3000);
       });
     }
   }

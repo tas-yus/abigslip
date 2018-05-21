@@ -50,7 +50,18 @@ var OrderSchema = new mongoose.Schema({
   matchedWith: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Order"
-  }
+  },
+  course: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Course"
+  },
+  books: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Book",
+      default: []
+    }
+  ]
 }, {
   timestamps: true,
   emitIndexErrors: true

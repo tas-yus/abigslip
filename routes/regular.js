@@ -11,6 +11,7 @@ var async = require("async");
 var bcrypt = require("bcryptjs");
 var jwt = require("jsonwebtoken");
 var User = require("../user");
+var Book = require("../book");
 
 var workbook = new Excel.Workbook();
 var processFormBody = multer({storage: multer.memoryStorage()}).single('file');
@@ -59,6 +60,8 @@ router.post('/api/students/:id/courses', (req, res) => {
         order.claimedAt = new Date();
         order.claimedBy = student._id;
         order.branch = req.body.branch;
+        order.books = req.body.books;
+        order.course = req.body.course;
         order.save((err, order) => {
           if (err) {
             console.log(err);
@@ -71,14 +74,29 @@ router.post('/api/students/:id/courses', (req, res) => {
               console.log(err);
               return res.status(400).send({message: "something's wrong"});
             }
-            res.status(200).send({message: "course added to student", id: student._id});
+            async.forEach(req.body.books, (book, cb) => {
+              Book.findByIdAndUpdate(book, { $push: { orders: order._id }}, (err, book) =>{
+                if (err) {
+                  console.log(err);
+                  return res.status(400).send({message: "something's wrong"});
+                }
+                cb();
+              });
+            }, (err) => {
+              if (err) {
+                console.log(err);
+                return res.status(400).send({message: "something's wrong"});
+              }
+              res.status(200).send({message: "course added to student", id: student._id});
+            });
           });
-
         });
       } else {
         var newOrder = new Order(queryObject);
         newOrder.claimedBy = student._id;
         newOrder.branch = req.body.branch;
+        newOrder.course = req.body.course;
+        newOrder.books = req.body.books;
         newOrder.save((err, order) => {
           if (err) {
             console.log(err);
@@ -91,7 +109,21 @@ router.post('/api/students/:id/courses', (req, res) => {
               console.log(err);
               return res.status(400).send({message: "something's wrong"});
             }
-            res.status(200).send({message: "course added to student", id: student._id});
+            async.forEach(req.body.books, (book, cb) => {
+              Book.findByIdAndUpdate(book, { $push: { orders: order._id  } }, (err, book) =>{
+                if (err) {
+                  console.log(err);
+                  return res.status(400).send({message: "something's wrong"});
+                }
+                cb();
+              });
+            }, (err) => {
+              if (err) {
+                console.log(err);
+                return res.status(400).send({message: "something's wrong"});
+              }
+              res.status(200).send({message: "course added to student", id: student._id});
+            });
           });
         });
       }
@@ -103,7 +135,7 @@ router.post('/api/students/:id/courses', (req, res) => {
 });
 
 router.get("/api/students/search", (req, res) => {
-  var limit = req.query.limit? Number(req.query.limit) : 3;
+  var limit = req.query.limit? Number(req.query.limit) : 5;
   var query = req.query.name?
   {
     $or:[{firstname:{$regex: String(req.query.name).trim(), $options: 'i'}},{lastname:{$regex: String(req.query.name).trim(), $options: 'i'}}],
@@ -114,7 +146,7 @@ router.get("/api/students/search", (req, res) => {
       return res.status(400).send({message: "something's wrong "});
     }
     if (students.length === 0) {
-      return res.status(400).send({message: "ไม่มีชื่อนี้ในระบบ"});
+      return res.status(400).send({message: "ไม่มีชื่อนี้ในระบบ สามารถสร้างเด็กได้"});
     }
     res.status(200).send(students);
   });
@@ -137,7 +169,7 @@ router.get("/api/students", (req, res) => {
 });
 
 router.get('/api/students/:id', (req, res) => {
-  Student.findById(req.params.id).populate("orders").then((student) => {
+  Student.findById(req.params.id).populate({path: "orders", match: {void: false}}).then((student) => {
     if (!student) {
       return res.status(400).send({message: "no student found"});
     }
@@ -153,14 +185,13 @@ router.post('/api/students', (req, res) => {
     firstname: String(req.body.firstname).trim(),
     lastname: String(req.body.lastname).trim(),
   }
-  console.log(queryObject);
   Student.findOne(queryObject, (err, oldStudent) => {
     if (err) {
       console.log(err);
       return res.status(400).send({message: "something's wrong"});
     }
     if (oldStudent) {
-      return res.status(400).send({message: "มีเด็กอยู่ในระบบอยู่แล้ว โปรดค้นหาเด็ก"});
+      return res.status(400).send({message: "มีเด็กอยู่ในระบบอยู่แล้ว โปรดเข้าหน้าเพจของเด็กเพื่อเพิ่มรายการ"});
     }
     var student = new Student (queryObject);
     student.save((err, student) => {

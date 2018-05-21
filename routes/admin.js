@@ -11,6 +11,7 @@ var async = require("async");
 var bcrypt = require("bcryptjs");
 var jwt = require("jsonwebtoken");
 var User = require("../user");
+var Book = require("../book");
 
 var workbook = new Excel.Workbook();
 var processFormBody = multer({storage: multer.memoryStorage()}).single('file');
@@ -82,11 +83,25 @@ router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
           order.claimedBy = req.body.studentId;
           order.claimedAt = new Date();
           order.branch = oldOrder.branch;
-          order.save((err, order) => {
+          order.books = oldOrder.books;
+          order.course = oldOrder.course;
+          async.forEach(oldOrder.books, (book, callback) => {
+            Book.findByIdAndUpdate(book, { $push: { orders: order._id  }}, (err, book) => {
+              if (err) {
+                return res.status(400).send({message: "something's wrong"});
+              }
+              callback();
+            });
+          }, (err) => {
             if (err) {
               return res.status(400).send({message: "something's wrong"});
             }
-            res.status(200).send({message: "ทำการแก้ไข และ match สลิปกับในระบบเรียบร้อย!", id: order._id});
+            order.save((err, order) => {
+              if (err) {
+                return res.status(400).send({message: "something's wrong"});
+              }
+              res.status(200).send({message: "ทำการแก้ไข และ match สลิปกับในระบบเรียบร้อย!", id: order._id});
+            });
           });
         });
       });
@@ -256,7 +271,9 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
 });
 
 router.get("/api/orders/:id", allowAdmin, (req, res) => {
-  Order.findById(req.params.id).populate({path: "claimedBy", select: "firstname lastname _id"}).exec((err, order) => {
+  Order.findById(req.params.id).populate({path: "claimedBy", select: "firstname lastname _id"})
+  .populate("course").populate({path: "books", select: "title"})
+  .exec((err, order) => {
     if (err) {
       console.log(err);
       return res.status(400).send({err, message: "Something went wrong"});

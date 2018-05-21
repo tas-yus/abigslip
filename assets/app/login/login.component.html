@@ -22,7 +22,7 @@
         </div>
     </form>
     <div class="text-right">
-      <button (click)="onLoginUser(f)" class="btn btn-primary">Login</button>
+      <button (click)="onLoginUser(f)" [disabled]="disabled" class="btn btn-primary">Login</button>
     </div>
     <span class="invalid-feedback" *ngIf="errMessage">
       *{{errMessage}}
