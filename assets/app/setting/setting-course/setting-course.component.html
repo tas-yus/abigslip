@@ -1,0 +1,14 @@
+<div class="container my-4">
+  <label>รูปแบบการโอนทั้งหมด</label>
+  <div *ngFor="let course of courses">
+    <div class="d-flex justify-content-between">
+      <p><span class="font-weight-bold bootstrap">{{course.title}}</span> - {{course.price}} บาท
+      </p>
+      <a routerLink="/settings/courses/{{course._id}}/edit" class="text-primary pl-4"> Edit
+      </a>
+    </div>
+    <div *ngFor="let book of course.books">
+      <ul class="pl-4"><i class="fa fa-arrow-right" aria-hidden="true"></i> {{book.title}}</ul>
+    </div>
+  </div>
+</div>

@@ -18,6 +18,10 @@ var CourseSchema = new mongoose.Schema({
       default: []
     }
   ],
+  code: {
+    type: String,
+    require: true,
+  },
   price: {
     type: Number,
     require: true

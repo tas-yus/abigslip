@@ -26,6 +26,9 @@
             <a class="nav-link text-light" *ngIf="authService.isAdmin()" routerLink="/orders">Slips</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link text-light" *ngIf="authService.isMaster()" routerLink="/settings">Settings <i class="fa fa-cog"></i></a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link text-light" style="cursor: pointer" (click)="onLogoutUser()">Logout</a>
           </li>
         </ng-template>

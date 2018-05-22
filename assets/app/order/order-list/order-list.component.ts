@@ -17,6 +17,10 @@ export class OrderListComponent implements OnInit {
   errorMessage1 = null;
   count = null;
   limit = 100;
+  month = new Date().getMonth();
+  year = new Date().getFullYear();
+  months = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม'
+  , 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
 
   @ViewChild('selectMode') selectMode;
 
@@ -28,7 +32,7 @@ export class OrderListComponent implements OnInit {
 
   getOrders() {
     this.loading = true;
-    this.http.get<any>(`/api/orders?token=${this.authService.getToken()}&&limit=${this.limit}`).subscribe((data) => {
+    this.http.get<any>(`/api/orders?token=${this.authService.getToken()}&&limit=${this.limit}&&month=${this.month}&&year=${this.year}`).subscribe((data) => {
       this.orders = data.orders;
       this.count = data.count;
       this.loading = false;
@@ -61,5 +65,13 @@ export class OrderListComponent implements OnInit {
   selectFilter(e) {
     this.limit = e.srcElement.value;
     this.getOrders();
+  }
+
+  getMonth() {
+    return this.months[new Date().getMonth()];
+  }
+
+  getYear(offset) {
+    return (new Date().getFullYear())-Number(offset);
   }
 }

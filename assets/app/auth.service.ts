@@ -37,6 +37,13 @@ export class AuthService {
     return decoded.user.isAdmin;
   }
 
+  isMaster() {
+    let jwtHelper: JwtHelper = new JwtHelper();
+    const token = localStorage.getItem('token');
+    const decoded = jwtHelper.decodeToken(token);
+    return decoded.user.isMaster;
+  }
+
   getToken() {
     return localStorage.getItem('token');
   }

@@ -18,6 +18,7 @@ var appRoutes = require('./routes/app');
 var regRoutes = require('./routes/regular');
 var adminRoutes = require('./routes/admin');
 var bookRoutes = require('./routes/book');
+var settingRoutes = require('./routes/setting');
 
 var app = express();
 
@@ -28,8 +29,8 @@ app.set('view engine', 'hbs');
 // uncomment after placing your favicon in /public
 // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-// mongoose.connect("mongodb://localhost:27017/abigslip");
-mongoose.connect("mongodb://test:test@ds016298.mlab.com:16298/abigslip");
+mongoose.connect("mongodb://localhost:27017/abigslip");
+// mongoose.connect("mongodb://test:test@ds016298.mlab.com:16298/abigslip");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -46,6 +47,7 @@ app.use('/', appRoutes);
 app.use('/', regRoutes);
 app.use('/', adminRoutes);
 app.use('/', bookRoutes);
+app.use('/', settingRoutes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -217,6 +219,13 @@ app.use(function (req, res, next) {
 //
 // var users = [
 //   {
+//     username: 'abigcentermaster',
+//     password: 'abig',
+//     branch: -1,
+//     isAdmin: true,
+//     isMaster: true
+//   },
+//   {
 //     username: 'abigcenteradmin',
 //     password: 'abig',
 //     branch: 0,
@@ -307,7 +316,7 @@ app.use(function (req, res, next) {
 //     isAdmin: false
 //   }
 // ];
-//
+
 // Order.remove({}).then(() => {
 //   console.log("orders removed");
 // }).catch((err) => {
@@ -319,7 +328,7 @@ app.use(function (req, res, next) {
 // }).catch((err) => {
 //   console.log(err);
 // });
-//
+
 // User.remove({}).then(() => {
 //   async.forEach(users, (user, callback) => {
 //     user.password = bcrypt.hashSync(user.password, 10);

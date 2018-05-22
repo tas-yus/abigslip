@@ -17,6 +17,10 @@ import { OrderEditComponent } from './order/order-edit/order-edit.component';
 import { OrderListComponent } from './order/order-list/order-list.component';
 import { OrderSearchComponent } from './order/order-search/order-search.component';
 import { LoginComponent } from './login/login.component';
+import { SettingComponent } from './setting/setting.component';
+import { SettingCourseComponent } from './setting/setting-course/setting-course.component';
+import { SettingCourseEditComponent } from './setting/setting-course-edit/setting-course-edit.component';
+import { SettingUserComponent } from './setting/setting-user/setting-user.component';
 import { HeaderComponent } from './header/header.component';
 import { MyDatePickerModule } from 'mydatepicker';
 
@@ -38,7 +42,11 @@ import { AuthGuard } from './auth-guard.service';
         StudentListComponent,
         OrderListComponent,
         BookListComponent,
-        BookShowComponent
+        BookShowComponent,
+        SettingComponent,
+        SettingCourseComponent,
+        SettingCourseEditComponent,
+        SettingUserComponent
     ],
     imports: [BrowserModule, AppRoutingModule, FormsModule,
       HttpClientModule, MyDatePickerModule],

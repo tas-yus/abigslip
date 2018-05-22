@@ -45,6 +45,16 @@ router.get('/api/books', (req, res) => {
   });
 });
 
+router.get('/api/books/list', (req, res) => {
+  Book.find({}).select("title _id")
+  .exec((err, books) => {
+    if (err) {
+      return res.status(400).send({message: "something's wrong "});
+    }
+    res.status(200).send({books});
+  });
+});
+
 router.get('/api/books/courses', (req, res) => {
   var queryObject = {};
   if (req.query.price) {

@@ -1,0 +1,27 @@
+.invalid-feedback {
+  display: block;
+}
+
+.valid-feedback {
+  display: block;
+}
+
+.KTB {
+  color: #1BA4E1;
+}
+
+.GSB {
+  color: #D5116E;
+}
+
+.CS {
+  color: #FC5F20;
+}
+
+.bootstrap {
+  color: #3f69ff;
+}
+
+a {
+  text-decoration: none;
+}
