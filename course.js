@@ -29,6 +29,10 @@ var CourseSchema = new mongoose.Schema({
   numBook: {
     type: Number,
     require: true
+  },
+  numUse: {
+    type: Number,
+    default: 0
   }
 }, { emitIndexErrors: true });
 

@@ -56,15 +56,14 @@
           </span>
       </form>
     </div>
-  </div>
-
-  <div *ngIf="order.course">
-    <hr>
-    <!-- <p class="font-weight-bold">รายละเอียดการสมัคร</p> -->
-    <p><span class="font-weight-bold"> คอร์ส:</span> {{order.course.title}}</p>
-    <p><span class="font-weight-bold">หนังสือ:</span>
-      <li *ngFor="let book of order.books">{{book.title}}</li>
-      <li *ngIf="order.books.length === 0">คอร์สนี้ไม่มีหนังสือ</li>
-    </p>
+    <div *ngIf="order.course">
+      <hr>
+      <!-- <p class="font-weight-bold">รายละเอียดการสมัคร</p> -->
+      <p><span class="font-weight-bold"> คอร์ส:</span> {{order.course.title}}</p>
+      <p><span class="font-weight-bold">หนังสือ:</span>
+        <li *ngFor="let book of order.books">{{book.title}}</li>
+        <li *ngIf="order.books.length === 0">คอร์สนี้ไม่มีหนังสือ</li>
+      </p>
+    </div>
   </div>
 </div>

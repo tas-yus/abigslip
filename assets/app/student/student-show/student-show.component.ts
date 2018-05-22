@@ -15,11 +15,12 @@ export class StudentShowComponent implements OnInit {
   type = null;
   date = null;
   success = null;
+  price = null;
   types = ['KTB', 'GSB', 'CS'];
   model = null;
   courses = [];
   books = [];
-  course =  null;
+  course =  0;
   selectedBooks = [];
   cancel = false;
   @ViewChild('selectMode') selectMode;
@@ -34,7 +35,7 @@ export class StudentShowComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.params['id'];
-    this.requestCourses(null);
+    this.requestCourses();
     this.http.get<any[]>(`/api/students/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
       this.student = data;
     }, (err) => {
@@ -42,11 +43,8 @@ export class StudentShowComponent implements OnInit {
     });
   }
 
-  requestCourses(query) {
-    if (query === null) {
-      query = 0;
-    }
-    this.http.get<any[]>(`/api/books/courses?token=${this.authService.getToken()}&&price=${query}`).subscribe((data) => {
+  requestCourses() {
+    this.http.get<any[]>(`/api/books/courses?token=${this.authService.getToken()}`).subscribe((data) => {
       this.courses = data;
       if (this.courses.length == 0) {
         this.course = null;
@@ -72,16 +70,13 @@ export class StudentShowComponent implements OnInit {
 
   onAddCourse(form: NgForm) {
     const date = this.date;
-    const time = form.value.time;
     const code = form.value.code;
-    const courseCode = form.value.courseCode;
     const id = this.route.snapshot.params['id'];
-    const price = form.value.price;
     const branch = this.authService.getBranch();
     const books = this.selectedBooks;
     const course = this.course;
     var body:any = {
-      type: this.type, code, date, courseCode, price, branch, books, course
+      type: this.type, code, date, branch, books, course
     };
     this.http.post<any>(`/api/students/${id}/courses?token=${this.authService.getToken()}`, body).subscribe((data) => {
       this.http.get<any[]>(`/api/students/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
@@ -89,6 +84,7 @@ export class StudentShowComponent implements OnInit {
         this.success = null;
         this.date = null;
         this.type = null;
+        this.course = 0;
         this.selectMode.nativeElement.value = "";
       }, (err) => {
         console.log(err);
@@ -124,13 +120,7 @@ export class StudentShowComponent implements OnInit {
     this.date = e.formatted;
   }
 
-  changePrice(e) {
-    this.requestCourses(e.srcElement.value);
-    this.selectedBooks = [];
-    console.log(e);
-  }
-
-  onSelectCourse() {
+  onSelectCourse(course) {
     if (this.course) {
       this.requestBooks(this.course);
     }

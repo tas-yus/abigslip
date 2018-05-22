@@ -56,11 +56,7 @@ router.get('/api/books/list', (req, res) => {
 });
 
 router.get('/api/books/courses', (req, res) => {
-  var queryObject = {};
-  if (req.query.price) {
-    queryObject.price = req.query.price;
-  }
-  Course.find(queryObject).select("title _id numBook").exec((err, courses) => {
+  Course.find({}).sort({numUse: -1}).select("title _id numBook code price numUse").exec((err, courses) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});
     }

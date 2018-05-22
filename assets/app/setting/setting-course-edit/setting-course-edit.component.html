@@ -16,7 +16,7 @@
       </div>
 
       <div class="text-right">
-        <button (click)="onEditCourse()" class="btn btn-primary" [disabled]="course.numBook > course.books.length || course.numBook < 0 || !!course.numBook">Edit</button>
+        <button (click)="onEditCourse()" class="btn btn-primary" [disabled]="course.numBook > course.books.length || course.numBook < 0 || course.numBook == null">Edit</button>
       </div>
 
       <div class="form-group my-4">

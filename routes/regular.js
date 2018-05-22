@@ -40,93 +40,99 @@ router.post('/api/students/:id/courses', (req, res) => {
     if (!student) {
       return res.status(400).send({message: "ไม่มีนักเรียนที่ต้องการใน database"});
     }
-    var queryObject = {
-      type: req.body.type,
-      code: String(req.body.code).trim(),
-      courseCode: String(req.body.courseCode).trim(),
-      price: req.body.price,
-      date: parseDate(req.body.date)
-    };
-    Order.findOne(queryObject, (err, order) => {
+    Course.findByIdAndUpdate(req.body.course, {$inc : {'numUse' : 1}}, (err, course) => {
       if (err) {
         console.log(err);
         return res.status(400).send({message: "something's wrong"});
       }
-      if (order) {
-        if (order.claimed) {
-          return res.status(400).send({message: "สลิปใช้ไปแล้ว"});
+      var queryObject = {
+        type: req.body.type,
+        code: String(req.body.code).trim(),
+        courseCode: course.code,
+        price: course.price,
+        date: parseDate(req.body.date)
+      };
+      Order.findOne(queryObject, (err, order) => {
+        if (err) {
+          console.log(err);
+          return res.status(400).send({message: "something's wrong"});
         }
-        order.claimed = true;
-        order.claimedAt = new Date();
-        order.claimedBy = student._id;
-        order.branch = req.body.branch;
-        order.books = req.body.books;
-        order.course = req.body.course;
-        order.save((err, order) => {
-          if (err) {
-            console.log(err);
-            return res.status(400).send({message: "something's wrong"});
+        if (order) {
+          if (order.claimed) {
+            return res.status(400).send({message: "สลิปใช้ไปแล้ว"});
           }
-          student.orders.push(order._id);
-          student.lastOrder = order._id;
-          student.save((err, student) => {
+          order.claimed = true;
+          order.claimedAt = new Date();
+          order.claimedBy = student._id;
+          order.branch = req.body.branch;
+          order.books = req.body.books;
+          order.course = req.body.course;
+          order.save((err, order) => {
             if (err) {
               console.log(err);
               return res.status(400).send({message: "something's wrong"});
             }
-            async.forEach(req.body.books, (book, cb) => {
-              Book.findByIdAndUpdate(book, { $push: { orders: order._id }}, (err, book) =>{
-                if (err) {
-                  console.log(err);
-                  return res.status(400).send({message: "something's wrong"});
-                }
-                cb();
-              });
-            }, (err) => {
+            student.orders.push(order._id);
+            student.lastOrder = order._id;
+            student.save((err, student) => {
               if (err) {
                 console.log(err);
                 return res.status(400).send({message: "something's wrong"});
               }
-              res.status(200).send({message: "course added to student", id: student._id});
+              async.forEach(req.body.books, (book, cb) => {
+                Book.findByIdAndUpdate(book, { $push: { orders: order._id }}, (err, book) =>{
+                  if (err) {
+                    console.log(err);
+                    return res.status(400).send({message: "something's wrong"});
+                  }
+                  cb();
+                });
+              }, (err) => {
+                if (err) {
+                  console.log(err);
+                  return res.status(400).send({message: "something's wrong"});
+                }
+                res.status(200).send({message: "course added to student", id: student._id});
+              });
             });
           });
-        });
-      } else {
-        var newOrder = new Order(queryObject);
-        newOrder.claimedBy = student._id;
-        newOrder.branch = req.body.branch;
-        newOrder.course = req.body.course;
-        newOrder.books = req.body.books;
-        newOrder.save((err, order) => {
-          if (err) {
-            console.log(err);
-            return res.status(400).send({message: "something's wrong"});
-          }
-          student.orders.push(order._id);
-          student.lastOrder = order._id;
-          student.save((err, student) => {
+        } else {
+          var newOrder = new Order(queryObject);
+          newOrder.claimedBy = student._id;
+          newOrder.branch = req.body.branch;
+          newOrder.course = req.body.course;
+          newOrder.books = req.body.books;
+          newOrder.save((err, order) => {
             if (err) {
               console.log(err);
               return res.status(400).send({message: "something's wrong"});
             }
-            async.forEach(req.body.books, (book, cb) => {
-              Book.findByIdAndUpdate(book, { $push: { orders: order._id  } }, (err, book) =>{
-                if (err) {
-                  console.log(err);
-                  return res.status(400).send({message: "something's wrong"});
-                }
-                cb();
-              });
-            }, (err) => {
+            student.orders.push(order._id);
+            student.lastOrder = order._id;
+            student.save((err, student) => {
               if (err) {
                 console.log(err);
                 return res.status(400).send({message: "something's wrong"});
               }
-              res.status(200).send({message: "course added to student", id: student._id});
+              async.forEach(req.body.books, (book, cb) => {
+                Book.findByIdAndUpdate(book, { $push: { orders: order._id  } }, (err, book) =>{
+                  if (err) {
+                    console.log(err);
+                    return res.status(400).send({message: "something's wrong"});
+                  }
+                  cb();
+                });
+              }, (err) => {
+                if (err) {
+                  console.log(err);
+                  return res.status(400).send({message: "something's wrong"});
+                }
+                res.status(200).send({message: "course added to student", id: student._id});
+              });
             });
           });
-        });
-      }
+        }
+      });
     });
   }).catch((err) => {
     console.log(err);

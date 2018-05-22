@@ -34,7 +34,11 @@ export class LoginComponent implements OnInit {
     this.http.post<any>('/login', {username, password}).subscribe((data) => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.userId);
-      this.router.navigate(['/home']);
+      if(this.authService.isMaster()) {
+        this.router.navigate(['/settings']);
+      } else {
+        this.router.navigate(['/home']);
+      }
     }, (err) => {
       this.disabled = false;
       this.errMessage = err.error.message;
