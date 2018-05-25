@@ -30,8 +30,8 @@ app.set('view engine', 'hbs');
 // uncomment after placing your favicon in /public
 // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-// mongoose.connect("mongodb://localhost:27017/abigslip");
-mongoose.connect("mongodb://test:test@ds016298.mlab.com:16298/abigslip");
+mongoose.connect("mongodb://localhost:27017/abigslip");
+// mongoose.connect("mongodb://test:test@ds016298.mlab.com:16298/abigslip");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -55,7 +55,7 @@ app.use(function (req, res, next) {
     return res.render('index');
 });
 
-// seedDB();
+seedDB();
 
 function seedDB() {
   var books = [
@@ -286,16 +286,20 @@ function seedDB() {
     {
       title: 'Mini Private 2 คอร์ส',
       code: 30,
-      numBook: 4,
-      bookCodes: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,
-      31,38,39,40,41,42,43,44,45],
-      strict: false
+      numBook: 2,
+      bookCodes: [15,16,17,18,19,20,22,23,24,25,26,27,28,29,30,38,39,40,41,42,43],
     },
     {
       title: 'Sci 4A',
       code: 31,
       numBook: 1,
       bookCodes: [9]
+    },
+    {
+      title: 'Mini Private 1 คอร์ส',
+      code: 32,
+      numBook: 1,
+      bookCodes: [15,16,17,18,19,20,22,23,24,25,26,27,28,29,30,38,39,40,41,42,43],
     },
   ];
 
@@ -334,7 +338,7 @@ function seedDB() {
       title: 'Mini Private',
       price: 1200,
       code: 'BG1200',
-      courseCodes: [5, 27, 20]
+      courseCodes: [32]
     },
     {
       title: 'Mini Private x2',
@@ -761,7 +765,13 @@ function seedDB() {
       title: 'ชดเชย private 4 ครั้ง',
       price: 1000,
       code: 'BG4444',
-    }
+    },
+    {
+      title: 'มิดไมล์ Private FREE',
+      price: 0,
+      code: 'FREE',
+      courseCodes: [13]
+    },
   ];
 
   async.waterfall([

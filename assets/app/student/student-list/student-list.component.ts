@@ -12,7 +12,7 @@ import { AuthService } from '../../auth.service';
 export class StudentListComponent implements OnInit {
   students = [];
   success = null;
-  types = ['KTB', 'GSB', 'CS', 'KTC'];
+  types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
   limit = 100;
   count = null;
   loading = false;

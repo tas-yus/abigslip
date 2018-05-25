@@ -1,9 +1,12 @@
 <div *ngIf="student" class="py-2">
-  <p><span class="font-weight-bold">ชื่อ-สกุล: </span>{{student.firstname}} {{student.lastname}}</p>
+  <p><span class="font-weight-bold">ชื่อ-สกุล: </span>{{student.firstname}} {{student.lastname}}
+    <i *ngIf="loading" class="fa fa-spin fa-spinner fa-fw pl-2"></i>
+  </p>
 
   <div class="form my-2">
     <h6 class="font-weight-bold">เพิ่มรายการโอน</h6>
     <form #f="ngForm">
+      <div [hidden]="loading">
 
         <div class="form-group">
           <select (change)="updateForm($event)" #selectMode class="form-control" id="">
@@ -12,13 +15,14 @@
             <option value="1">กรุงไทย KTB</option>
             <option value="2">ออมสิน GSB</option>
             <option value="4">บัตร KTC</option>
+            <option value="5">Gift Voucher ฟรี</option>
           </select>
         </div>
 
         <div *ngIf="type">
           <div class="form-group" *ngIf="type == 1 || type == 2">
             <input type="text" minlength="10" maxlength="10" name="code" class="form-control"
-            placeholder="confirmation code" ngModel required #code="ngModel"
+            placeholder="confirmation code" ngModel required #code="ngModel" autocomplete="off"
             [class.is-invalid]="!code.valid && code.touched || code.valid && code.touched && !validate(type, code.value)">
             <span class="invalid-feedback" *ngIf="!code.valid && code.touched || code.valid && code.touched && !validate(type, code.value)">
               *โปรดใส่ confirmation code ที่ถูกต้อง (เบอร์โทรศัพท์ 10 หลัก)
@@ -26,18 +30,18 @@
           </div>
           <div class="form-group" *ngIf="type == 3">
             <input type="text" minlength="10" maxlength="10" name="code" class="form-control"
-            placeholder="confirmation code" ngModel required #code="ngModel"
+            placeholder="confirmation code" ngModel required #code="ngModel" autocomplete="off"
             [class.is-invalid]="!code.valid && code.touched || code.valid && code.touched && !validate(type, code.value)">
             <span class="invalid-feedback" *ngIf="!code.valid && code.touched || code.valid && code.touched && !validate(type, code.value)">
               *โปรดใส่ confirmation code ที่ถูกต้อง (ตัวเลข 10 หลัก)
             </span>
           </div>
           <div class="form-group" *ngIf="type == 4">
-            <input type="text" minlength="10" maxlength="10" name="code" class="form-control"
-            placeholder="confirmation code" ngModel required #code="ngModel"
+            <input type="text" minlength="6" maxlength="7" name="code" class="form-control"
+            placeholder="confirmation code" ngModel required #code="ngModel" autocomplete="off"
             [class.is-invalid]="!code.valid && code.touched || code.valid && code.touched && !validate(type, code.value)">
             <span class="invalid-feedback" *ngIf="!code.valid && code.touched || code.valid && code.touched && !validate(type, code.value)">
-              *โปรดใส่ confirmation code ที่ถูกต้อง (เบอร์โอน 10 หลัก)
+              *โปรดใส่ confirmation code ที่ถูกต้อง (เบอร์โอน 6 หรือ 7 หลัก)
             </span>
           </div>
 
@@ -76,7 +80,7 @@
 
 
         <div class="form-group text-right">
-            <button (click)="onAddCourse(f); f.reset()" [disabled]="!f.form.valid || type < 1 || type > 4
+            <button (click)="onAddCourse(f); f.reset()" [disabled]="!f.form.valid && type != 5 || type < 1 || type > 5
             || !date || !course || getCourse(course).strict && selectedBooks.length !== getCourse(course).numBook || selectedBooks.length > getCourse(course).numBook
             || !validate(type, f.value.code)" class="btn btn-primary">Add</button>
         </div>
@@ -86,6 +90,8 @@
         <span class="invalid-feedback text-success" *ngIf="successMessage">
           *{{successMessage}}
         </span>
+
+      </div>
     </form>
   </div>
 
@@ -95,10 +101,10 @@
         <h5 class="my-0 text-white">{{types[order.type-1]}}</h5>
       </div>
       <div class="card-body">
-        <p><span class="font-weight-bold">Code:</span> {{order.code}}</p>
+        <p><span class="font-weight-bold" *ngIf="order.code">Code:</span> {{order.code}}</p>
         <p><span class="font-weight-bold">วันที่ (วัน-เดือน-ปี):</span> {{getDate(order.date)}}</p>
         <p><span class="font-weight-bold">รหัสคอร์ส:</span> {{order.courseCode}}</p>
-        <p><span class="font-weight-bold">ราคา:</span> {{order.price}}</p>
+        <p><span class="font-weight-bold">ราคา:</span> {{order.price}} บาท</p>
         <p><span class="font-weight-bold">เคลม: <i class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i></span>
       </div>
     </div>

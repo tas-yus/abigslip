@@ -56,13 +56,22 @@ router.get('/api/orders', allowAdmin, (req, res) => {
 });
 
 router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
-  var queryObject = {
-    type: req.body.type,
-    code: String(req.body.code).trim(),
-    courseCode: String(req.body.courseCode).trim(),
-    date: parseDate(req.body.date),
-    price: req.body.price
-  };
+  if (req.body.type == 4) {
+    var queryObject = {
+      type: req.body.type,
+      courseCode: String(req.body.courseCode).trim(),
+      date: parseDate(req.body.date),
+      price: req.body.price
+    };
+  } else {
+    var queryObject = {
+      type: req.body.type,
+      code: String(req.body.code).trim(),
+      courseCode: String(req.body.courseCode).trim(),
+      date: parseDate(req.body.date),
+      price: req.body.price
+    };
+  }
   Order.findOne(queryObject).then((order) => {
     if (!order) {
       return res.status(400).send({message: "ยังไม่เคยมีสลิปนี้ในระบบ"});
@@ -165,7 +174,7 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
   // if (req.body.type != 1 && req.body.type != 2 && req.body.type != 3 && req.body.type != 4) {
   //   return res.status(400).send({message: "โปรดระบุรูปแบบไฟล์"});
   // }
-  var sheets = [{name: 'KTB', type: 1}, {name: 'GSB', type :2}, {name: 'CS', type: 3}];
+  var sheets = [{name: 'KTB', type: 1}, {name: 'GSB', type :2}, {name: 'CS', type: 3}, {name: 'KTC', type: 4}];
   var countMatched = 0;
   var countAdded = 0;
   var corrupted = false;
@@ -173,7 +182,6 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
     async.forEachSeries((sheets), (sheet, callback) => {
       var worksheet = workbook.getWorksheet(sheet.name);
       if (!worksheet) {
-        corrupted = true;
         return callback();
       }
       var count = 1;
@@ -182,23 +190,43 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
           count++;;
           return;
         }
-        if (rowNumber == 1 && (row.values[1] != "Confirm Code" || row.values[2] != "โทรศัพท์" || row.values[3] != "ค่าเรียน"
-        || row.values[5] != "วันที่สมัคร" || row.values[6] != "รหัสคอร์ส")) {
-          corrupted = true;
+        if (sheet.type == 4) {
+          if (rowNumber == 1 && (row.values[1] != "วันที่สมัคร"  || row.values[2] != "ค่าเรียน")) {
+            corrupted = true;
+          }
+        } else {
+          if (rowNumber == 1 && (row.values[1] != "Confirm Code" || row.values[2] != "โทรศัพท์" || row.values[3] != "ค่าเรียน"
+          || row.values[5] != "วันที่สมัคร" || row.values[6] != "รหัสคอร์ส")) {
+            corrupted = true;
+          }
         }
         if (rowNumber > 1) {
-          var date = parseDate(row.values[5], sheet.type);
-          if (sheet.type == 3) {
-            var code = row.values[1];
+          if (sheet.type == 4) {
+            var date = parseDate(row.values[1], sheet.type);
           } else {
-            var code = row.values[2].replace(/-/g,'');
+            var date = parseDate(row.values[5], sheet.type);
           }
-          code = String(code).trim();
-          var courseCode = String(row.values[6]).trim();
-          var price = row.values[3];
-          var queryObject = {
-            code, date, type: sheet.type, courseCode, price
-          };
+          if (sheet.type != 4) {
+            if (sheet.type == 3) {
+              var code = row.values[1];
+            } else  {
+              var code = row.values[2].replace(/-/g,'');
+            }
+            code = String(code).trim();
+            var courseCode = String(row.values[6]).trim();
+            var price = row.values[3];
+          } else {
+            var price = row.values[2];
+          }
+          if (sheet.type == 4) {
+            var queryObject = {
+              date, type: sheet.type, price
+            };
+          } else {
+            var queryObject = {
+              code, date, type: sheet.type, courseCode, price
+            };
+          }
           Order.findOne(queryObject, (err, order) => {
             if (err) {
               console.log(err);

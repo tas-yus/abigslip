@@ -46,13 +46,21 @@ router.post('/api/students/:id/courses', (req, res) => {
         console.log(err);
         return res.status(400).send({message: "something's wrong"});
       }
-      var queryObject = {
-        type: req.body.type,
-        code: String(req.body.code).trim(),
-        courseCode: group.code,
-        price: group.price,
-        date: parseDate(req.body.date)
-      };
+      if (req.body.type != 4) {
+        var queryObject = {
+          type: req.body.type,
+          code: String(req.body.code).trim(),
+          courseCode: group.code,
+          price: group.price,
+          date: parseDate(req.body.date)
+        };
+      } else {
+        var queryObject = {
+          type: req.body.type,
+          price: group.price,
+          date: parseDate(req.body.date)
+        };
+      }
       Order.findOne(queryObject, (err, order) => {
         if (err) {
           console.log(err);
@@ -72,6 +80,10 @@ router.post('/api/students/:id/courses', (req, res) => {
           order.books = req.body.books;
           order.group = req.body.group;
           order.course = req.body.course;
+          if (req.body.type == 4) {
+            order.courseCode = group.code;
+            order.code = req.body.code;
+          }
           order.save((err, order) => {
             if (err) {
               console.log(err);
@@ -108,12 +120,18 @@ router.post('/api/students/:id/courses', (req, res) => {
           newOrder.group = req.body.group;
           newOrder.course = req.body.course;
           newOrder.books = req.body.books;
+          if (req.body.type == 5) {
+            newOrder.claimed = true;
+            newOrder.claimedAt = new Date();
+            newOrder.code = null;
+          } else {
+            newOrder.code = req.body.code;
+          }
           newOrder.save((err, order) => {
             if (err) {
               console.log(err);
               return res.status(400).send({message: "something's wrong"});
             }
-            console.log(order);
             student.orders.push(order._id);
             student.lastOrder = order._id;
             student.save((err, student) => {
@@ -215,7 +233,6 @@ router.post('/api/students', (req, res) => {
       res.status(200).send({message: "student added", id: student._id});
     });
   })
-
 });
 
 module.exports = router;

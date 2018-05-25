@@ -2,7 +2,7 @@
   <h6 class="font-weight-bold">เพิ่มเด็ก</h6>
   <form #f="ngForm">
       <div class="form-group">
-        <input type="text" (input)="search(firstname.value)" name="firstname" class="form-control"
+        <input type="text" (input)="search(firstname.value)" name="firstname" class="form-control" autocomplete="off"
         placeholder="ชื่อ" ngModel required #firstname="ngModel"
         [class.is-invalid]="!firstname.valid && firstname.touched">
         <!-- <span class="invalid-feedback" *ngIf="!firstname.valid && firstname.touched">
@@ -10,7 +10,7 @@
         </span> -->
       </div>
       <div class="form-group">
-        <input type="text" (input)="search(lastname.value)" name="lastname" class="form-control"
+        <input type="text" (input)="search(lastname.value)" name="lastname" class="form-control" autocomplete="off"
         placeholder="นามสกุล" ngModel required #lastname="ngModel"
         [class.is-invalid]="!lastname.valid && lastname.touched">
         <!-- <span class="invalid-feedback" *ngIf="!lastname.valid && lastname.touched">

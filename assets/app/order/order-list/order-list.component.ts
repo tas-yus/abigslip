@@ -13,7 +13,7 @@ export class OrderListComponent implements OnInit {
   orders = [];
   loading = false;
   search = false;
-  types = ['KTB', 'GSB', 'CS', 'KTC'];
+  types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
   errorMessage1 = null;
   count = null;
   limit = 100;

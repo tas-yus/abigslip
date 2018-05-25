@@ -57,7 +57,17 @@ router.get('/api/books/list', (req, res) => {
 });
 
 router.get('/api/groups', (req, res) => {
-  Group.find({}).sort({numUse: -1}).select("code price title numUse").exec((err, groups) => {
+  Group.find({}).sort({code: 1}).select("code price title numUse").exec((err, groups) => {
+    if (err) {
+      return res.status(400).send({message: "something's wrong "});
+    }
+    res.status(200).send(groups);
+  });
+});
+
+
+router.get('/api/groups/free', (req, res) => {
+  Group.find({price: 0}).sort({numUse: -1}).select("code price title numUse").exec((err, groups) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});
     }

@@ -39,8 +39,8 @@
       <a routerLink="/students/{{student._id}}"><td>{{student.firstname}} {{student.lastname}}</td></a>
       <ng-template [ngIf]="student.lastOrder">
         <td class="font-weight-bold {{types[student.lastOrder.type-1]}}">{{types[student.lastOrder.type-1]}}</td>
-        <td>{{student.lastOrder.code}}</td>
-        <td>{{student.lastOrder.courseCode}}</td>
+        <td>{{student.lastOrder.code? student.lastOrder.code:'-'}}</td>
+        <td>{{student.lastOrder.courseCode? student.lastOrder.courseCode: '-'}}</td>
         <td>{{student.lastOrder.price}}</td>
         <td>
           <i class="fa {{student.lastOrder.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i>

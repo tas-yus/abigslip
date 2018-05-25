@@ -7,11 +7,9 @@ var OrderSchema = new mongoose.Schema({
   },
   code: {
     type: String,
-    required: true
   },
   courseCode: {
     type: String,
-    required: true
   },
   type: {
     type: Number,
@@ -65,7 +63,7 @@ var OrderSchema = new mongoose.Schema({
       ref: "Book",
       default: []
     }
-  ]
+  ],
 }, {
   timestamps: true,
   emitIndexErrors: true

@@ -16,7 +16,7 @@ export class StudentShowComponent implements OnInit {
   date = null;
   success = null;
   price = null;
-  types = ['KTB', 'GSB', 'CS', 'KTC'];
+  types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
   model = null;
   groups = [];
   courses = [];
@@ -24,6 +24,8 @@ export class StudentShowComponent implements OnInit {
   group =  0;
   course = 0;
   selectedBooks = [];
+  loading = false;
+  free = false;
   @ViewChild('selectMode') selectMode;
 
   public myDatePickerOptions: IMyDpOptions = {
@@ -36,7 +38,6 @@ export class StudentShowComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.params['id'];
-    this.requestGroups();
     this.http.get<any[]>(`/api/students/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
       this.student = data;
     }, (err) => {
@@ -46,6 +47,18 @@ export class StudentShowComponent implements OnInit {
 
   requestGroups() {
     this.http.get<any[]>(`/api/groups?token=${this.authService.getToken()}`).subscribe((data) => {
+      this.groups = data;
+      if (this.groups.length == 0) {
+        this.group = null;
+        this.books = [];
+      }
+    }, (err) => {
+      console.log(err);
+    });
+  }
+
+  requestFreeGroups() {
+    this.http.get<any[]>(`/api/groups/free?token=${this.authService.getToken()}`).subscribe((data) => {
       this.groups = data;
       if (this.groups.length == 0) {
         this.group = null;
@@ -92,8 +105,10 @@ export class StudentShowComponent implements OnInit {
     var body:any = {
       type: this.type, code, date, branch, books, group, course
     };
+    this.loading = true;
     this.http.post<any>(`/api/students/${id}/courses?token=${this.authService.getToken()}`, body).subscribe((data) => {
       this.http.get<any[]>(`/api/students/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
+        this.loading = false;
         this.student = data;
         this.success = null;
         this.date = null;
@@ -117,6 +132,20 @@ export class StudentShowComponent implements OnInit {
 
   updateForm(e) {
     this.type = e.srcElement.value;
+    if (this.type != 5) {
+      if (this.free) {
+        this.courses = [];
+        this.course = 0;
+        this.group = 0;
+        this.selectedBooks = [];
+        this.books = [];
+        this.free = false;
+      }
+      this.requestGroups();
+    } else {
+      this.free = true;
+      this.requestFreeGroups();
+    }
   }
 
   getDate(date) {
@@ -161,9 +190,10 @@ export class StudentShowComponent implements OnInit {
   }
 
   validate(type, str) {
+    if (type == 5 || 4) return true;
     if (type == 1 || type == 2) {
       var validator = /0\d{9}/;
-    } else {
+    } else if (type == 3){
       var validator = /^\d{10}$/;
     }
     return validator.test(str);

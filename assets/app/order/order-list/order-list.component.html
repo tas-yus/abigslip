@@ -43,8 +43,8 @@
     <tr style="cursor:pointer" routerLink="/orders/{{order._id}}/edit" *ngFor="let order of orders; let i = index">
       <td class="font-weight-bold">{{i + 1}}</td>
       <td class="font-weight-bold {{types[order.type-1]}}">{{types[order.type-1]}}</td>
-      <td>{{order.code}}</td>
-      <td>{{order.courseCode}}</td>
+      <td>{{order.code? order.code:'-'}}</td>
+      <td>{{order.courseCode? order.courseCode: '-'}}</td>
       <td>{{order.price}}</td>
       <td>
         <i class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i>
