@@ -55,7 +55,7 @@ app.use(function (req, res, next) {
     return res.render('index');
 });
 
-seedDB();
+// seedDB();
 
 function seedDB() {
   var books = [
