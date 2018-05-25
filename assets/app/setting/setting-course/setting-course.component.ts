@@ -10,23 +10,32 @@ import { AuthService } from '../../auth.service';
     styleUrls: ['./setting-course.component.css']
 })
 export class SettingCourseComponent implements OnInit {
-  courses= [];
-  loading = false;
-  search = false;
-  types = ['KTB', 'GSB', 'CS'];
-  errorMessage1 = null;
-  limit = 100;
+  courses = [];
+  addCourse = false;
 
   constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, public authService: AuthService) {}
 
   ngOnInit() {
-    if (!this.authService.isMaster()) {
+    if (!this.authService.isSetting()) {
       return this.router.navigate(['/home']);
     }
-    this.http.get<any[]>(`/api/courses?token=${this.authService.getToken()}`).subscribe((data) => {
+    this.requestCourses();
+  }
+
+  requestCourses() {
+    this.http.get<any[]>(`/api/settings/courses?token=${this.authService.getToken()}`).subscribe((data) => {
       this.courses = data;
     }, (err) => {
+      console.log(err);
+    });
+  }
 
+  onAddCourse(form: NgForm) {
+    var body = {title: form.value.title, numBook: form.value.numBook};
+    this.http.post<any>(`/api/settings/courses?token=${this.authService.getToken()}`, body).subscribe((data) => {
+      this.router.navigate([`/settings/courses/${data._id}/edit`]);
+    }, (err) => {
+      console.log(err);
     });
   }
 

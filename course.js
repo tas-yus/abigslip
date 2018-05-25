@@ -3,7 +3,7 @@ var mongoose = require("mongoose");
 var CourseSchema = new mongoose.Schema({
   title: {
     type: String,
-    require: true
+    required: true
   },
   books: [
     {
@@ -19,16 +19,16 @@ var CourseSchema = new mongoose.Schema({
     }
   ],
   code: {
-    type: String,
-    require: true,
-  },
-  price: {
     type: Number,
-    require: true
+    required: true,
   },
   numBook: {
     type: Number,
-    require: true
+    required: true
+  },
+  strict: {
+    type: Boolean,
+    default: true
   },
   numUse: {
     type: Number,

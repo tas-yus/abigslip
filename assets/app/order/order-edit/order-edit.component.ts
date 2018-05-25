@@ -22,7 +22,7 @@ export class OrderEditComponent implements OnInit {
   canEdit = true;
   errorMessage1 = null;
   loading = false;
-  types = ['KTB', 'GSB', 'CS'];
+  types = ['KTB', 'GSB', 'CS', 'KTC'];
 
   @ViewChild('selectMode') selectMode;
 

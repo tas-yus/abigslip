@@ -12,6 +12,7 @@ var bcrypt = require("bcryptjs");
 var jwt = require("jsonwebtoken");
 var User = require("../user");
 var Book = require("../book");
+var Group = require("../group");
 
 var workbook = new Excel.Workbook();
 var processFormBody = multer({storage: multer.memoryStorage()}).single('file');
@@ -40,7 +41,7 @@ router.post('/api/students/:id/courses', (req, res) => {
     if (!student) {
       return res.status(400).send({message: "ไม่มีนักเรียนที่ต้องการใน database"});
     }
-    Course.findByIdAndUpdate(req.body.course, {$inc : {'numUse' : 1}}, (err, course) => {
+    Group.findByIdAndUpdate(req.body.group, {$inc : {'numUse' : 1}}, (err, group) => {
       if (err) {
         console.log(err);
         return res.status(400).send({message: "something's wrong"});
@@ -48,8 +49,8 @@ router.post('/api/students/:id/courses', (req, res) => {
       var queryObject = {
         type: req.body.type,
         code: String(req.body.code).trim(),
-        courseCode: course.code,
-        price: course.price,
+        courseCode: group.code,
+        price: group.price,
         date: parseDate(req.body.date)
       };
       Order.findOne(queryObject, (err, order) => {
@@ -58,6 +59,9 @@ router.post('/api/students/:id/courses', (req, res) => {
           return res.status(400).send({message: "something's wrong"});
         }
         if (order) {
+          if (!order.createdByServer) {
+            return res.status(400).send({message: "เคยสร้างรายการโอนนี้แล้ว"});
+          }
           if (order.claimed) {
             return res.status(400).send({message: "สลิปใช้ไปแล้ว"});
           }
@@ -66,6 +70,7 @@ router.post('/api/students/:id/courses', (req, res) => {
           order.claimedBy = student._id;
           order.branch = req.body.branch;
           order.books = req.body.books;
+          order.group = req.body.group;
           order.course = req.body.course;
           order.save((err, order) => {
             if (err) {
@@ -100,6 +105,7 @@ router.post('/api/students/:id/courses', (req, res) => {
           var newOrder = new Order(queryObject);
           newOrder.claimedBy = student._id;
           newOrder.branch = req.body.branch;
+          newOrder.group = req.body.group;
           newOrder.course = req.body.course;
           newOrder.books = req.body.books;
           newOrder.save((err, order) => {
@@ -107,6 +113,7 @@ router.post('/api/students/:id/courses', (req, res) => {
               console.log(err);
               return res.status(400).send({message: "something's wrong"});
             }
+            console.log(order);
             student.orders.push(order._id);
             student.lastOrder = order._id;
             student.save((err, student) => {
@@ -175,7 +182,7 @@ router.get("/api/students", (req, res) => {
 });
 
 router.get('/api/students/:id', (req, res) => {
-  Student.findById(req.params.id).populate({path: "orders", match: {void: false}}).then((student) => {
+  Student.findById(req.params.id).populate({path: "orders", options: {sort: {date: -1}}, match: {void: false}}).then((student) => {
     if (!student) {
       return res.status(400).send({message: "no student found"});
     }

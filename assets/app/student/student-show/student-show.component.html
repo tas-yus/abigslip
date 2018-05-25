@@ -11,43 +11,57 @@
             <option value="3">Counter Service</option>
             <option value="1">กรุงไทย KTB</option>
             <option value="2">ออมสิน GSB</option>
+            <option value="4">บัตร KTC</option>
           </select>
         </div>
 
-
         <div *ngIf="type">
-          <div class="form-group">
-            <input type="text" name="code" class="form-control"
+          <div class="form-group" *ngIf="type == 1 || type == 2">
+            <input type="text" minlength="10" maxlength="10" name="code" class="form-control"
             placeholder="confirmation code" ngModel required #code="ngModel"
-            [class.is-invalid]="!code.valid && code.touched">
-            <span class="invalid-feedback" *ngIf="!code.valid && code.touched">
-              *โปรดใส่ confirmation code
+            [class.is-invalid]="!code.valid && code.touched || code.valid && code.touched && !validate(type, code.value)">
+            <span class="invalid-feedback" *ngIf="!code.valid && code.touched || code.valid && code.touched && !validate(type, code.value)">
+              *โปรดใส่ confirmation code ที่ถูกต้อง (เบอร์โทรศัพท์ 10 หลัก)
             </span>
+          </div>
+          <div class="form-group" *ngIf="type == 3">
+            <input type="text" minlength="10" maxlength="10" name="code" class="form-control"
+            placeholder="confirmation code" ngModel required #code="ngModel"
+            [class.is-invalid]="!code.valid && code.touched || code.valid && code.touched && !validate(type, code.value)">
+            <span class="invalid-feedback" *ngIf="!code.valid && code.touched || code.valid && code.touched && !validate(type, code.value)">
+              *โปรดใส่ confirmation code ที่ถูกต้อง (ตัวเลข 10 หลัก)
+            </span>
+          </div>
+          <div class="form-group" *ngIf="type == 4">
+            <input type="text" minlength="10" maxlength="10" name="code" class="form-control"
+            placeholder="confirmation code" ngModel required #code="ngModel"
+            [class.is-invalid]="!code.valid && code.touched || code.valid && code.touched && !validate(type, code.value)">
+            <span class="invalid-feedback" *ngIf="!code.valid && code.touched || code.valid && code.touched && !validate(type, code.value)">
+              *โปรดใส่ confirmation code ที่ถูกต้อง (เบอร์โอน 10 หลัก)
+            </span>
+          </div>
+
+          <div class="form-group">
+            <select name="group" (change)="onSelectGroup()" *ngIf="groups.length !== 0" [(ngModel)]="group" class="form-control">
+              <option value="0">เลือกรหัสคอร์ส</option>
+              <option *ngFor="let group of groups" value="{{group._id}}">{{group.code}} - {{group.title}}</option>
+            </select>
           </div>
 
           <div class="form-group">
             <select name="course" (change)="onSelectCourse()" *ngIf="courses.length !== 0" [(ngModel)]="course" class="form-control">
-              <option value="0">เลือกรหัสคอร์ส</option>
-              <option *ngFor="let course of courses" value="{{course._id}}">{{course.code}} - {{course.title}}</option>
+              <option value="0">เลือกคอร์ส</option>
+              <option *ngFor="let course of courses" value="{{course._id}}">{{course.title}}</option>
             </select>
           </div>
 
-          <!-- <div class="form-group">
-            <input type="number" name="price" class="form-control"
-            placeholder="ราคาคอร์ส" [(ngModel)]="price">
-            <span class="invalid-feedback" *ngIf="!price">
-              *โปรดใส่ราคาคอร์ส
-            </span>
-          </div> -->
-
-          <div class="form-group" *ngIf="type && course && books.length >= 1">
-            <p>โปรดเลือกหนังสือ {{getCourse(course).numBook}} รายการ</p>
+          <div class="form-group" *ngIf="type && group != 0 && course != 0 && books.length >= 1 && getCourse(course)">
+            <p>โปรดเลือกหนังสือ {{getCourse(course).numBook}} รายการ {{getCourse(course).strict? '':'หรือน้อยกว่า (ขึ้นกับคอร์สเรียนที่น้องสมัคร)'}}</p>
             <div *ngFor="let book of books">
               <input (change)="onSelectBooks($event)" type="checkbox" value="{{book._id}}"
-              [disabled]="selectedBooks.length >= getCourse(course).numBook && !cancel">
+              [disabled]="selectedBooks.length >= getCourse(course).numBook">
               {{book.title}}
             </div>
-            <!-- <button (click)="cancel = !cancel; input.checked = false" class="btn btn-sm btn-light">ยกเลิก</button> -->
           </div>
 
           <div class="form-group">
@@ -62,8 +76,9 @@
 
 
         <div class="form-group text-right">
-            <button (click)="onAddCourse(f); f.reset()" [disabled]="!f.form.valid || (type != 1 && type != 2 && type != 3)
-            || !date || !course || selectedBooks.length !== getCourse(course).numBook" class="btn btn-primary">Add</button>
+            <button (click)="onAddCourse(f); f.reset()" [disabled]="!f.form.valid || type < 1 || type > 4
+            || !date || !course || getCourse(course).strict && selectedBooks.length !== getCourse(course).numBook || selectedBooks.length > getCourse(course).numBook
+            || !validate(type, f.value.code)" class="btn btn-primary">Add</button>
         </div>
         <span class="invalid-feedback" *ngIf="errMessage">
           *{{errMessage}}

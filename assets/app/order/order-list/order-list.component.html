@@ -7,7 +7,7 @@
 <order-search *ngIf="search"></order-search>
 <div class="container my-4">
   <div class="d-flex justify-content-between">
-    <h6 class="font-weight-bold">รายชื่อสลิปอัพเดทล่าสุด (จาก {{orders.length}} สลิป)</h6>
+    <h6 class="font-weight-bold">รายชื่อสลิปอัพเดทล่าสุด (จาก {{count}} สลิป)</h6>
     <div>
       <div class="form-group d-flex">
         <select (change)="getOrders()" class="form-control" [(ngModel)]="month">

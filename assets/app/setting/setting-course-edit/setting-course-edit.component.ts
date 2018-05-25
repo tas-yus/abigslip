@@ -11,6 +11,7 @@ import { AuthService } from '../../auth.service';
 })
 export class SettingCourseEditComponent implements OnInit {
   course = null;
+  ngCourse = null;
   loading = false;
   search = false;
   books = [];
@@ -19,16 +20,26 @@ export class SettingCourseEditComponent implements OnInit {
   limit = 100;
   addBook = false;
   newBook = false;
+  showEdit = false;
 
   constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, public authService: AuthService) {}
 
   ngOnInit() {
-    if (!this.authService.isMaster()) {
+    if (!this.authService.isSetting()) {
       return this.router.navigate(['/home']);
     }
+    this.getCourse();
+  }
+
+  getCourse() {
     const id = this.route.snapshot.params['id'];
-    this.http.get<any[]>(`/api/courses/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
+    this.http.get<any>(`/api/courses/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
       this.course = data;
+      this.ngCourse = {
+        title: data.title,
+        numBook: data.numBook,
+        strict: data.strict
+      };
     }, (err) => {
       this.router.navigate(['/settings']);
     });
@@ -88,9 +99,11 @@ export class SettingCourseEditComponent implements OnInit {
 
   onEditCourse() {
     const courseId = this.route.snapshot.params['id'];
-    const body = {price: this.course.price, numBook: this.course.numBook};
+    const body = {title: this.ngCourse.title, numBook: this.ngCourse.numBook, strict: this.ngCourse.strict};
     this.http.put<any>(`/api/courses/${courseId}?token=${this.authService.getToken()}`, body).subscribe((data) => {
-      this.router.navigate(['/settings/courses']);
+      this.showEdit = false;
+      this.getCourse();
+      console.log(data);
     }, (err) => {
       console.log(err);
     });

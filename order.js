@@ -51,6 +51,10 @@ var OrderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Order"
   },
+  group: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Group"
+  },
   course: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Course"

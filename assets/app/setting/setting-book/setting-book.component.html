@@ -1,0 +1,27 @@
+<div class="container my-4">
+  <div class="jumbotron py-2">
+    <label class="my-0 font-weight-bold"><i class="fa fa-check-circle text-success"></i> หนังสือทั้งหมด</label>
+  </div>
+  <div class="text-right">
+    <i (click)="addBook = !addBook" *ngIf="!addBook" style="cursor: pointer" class="fa fa-plus fa-2x"></i>
+    <i (click)="addBook = !addBook" *ngIf="addBook" style="cursor: pointer" class="fa fa-times"></i>
+  </div>
+  <div *ngIf="addBook" class="form-group">
+    <label>เพิ่มหนังสือ</label>
+    <form #f = "ngForm">
+      <input type="text" placeholder="ชื่อหนังสือ" name="title" class="form-control" required ngModel #title="ngModel"
+      [class.is-invalid]="!title.valid && title.touched">
+      <div class="text-right my-2">
+        <button [disabled]="!f.form.valid" (click)="onAddBook(f)" class="btn btn-primary">เพิ่ม</button>
+      </div>
+    </form>
+  </div>
+  <div class="container">
+    <div *ngFor="let book of books; let i = index">
+      <div class="d-flex justify-content-between">
+        <li><span>{{book.title}}</span>
+        </li>
+      </div>
+    </div>
+  </div>
+</div>

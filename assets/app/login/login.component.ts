@@ -4,14 +4,10 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 
-// import { AuthService } from '../auth.service';
-// import { UserService } from '../../dashboard/user.service';
-
 @Component({
   selector: 'login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
-  // providers: [AuthService]
 })
 
 export class LoginComponent implements OnInit {
@@ -34,7 +30,7 @@ export class LoginComponent implements OnInit {
     this.http.post<any>('/login', {username, password}).subscribe((data) => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.userId);
-      if(this.authService.isMaster()) {
+      if(this.authService.isSetting()) {
         this.router.navigate(['/settings']);
       } else {
         this.router.navigate(['/home']);
@@ -45,18 +41,6 @@ export class LoginComponent implements OnInit {
       setTimeout(() => {
         this.errMessage = null;
       }, 3000);
-    })
-  }
-
-  onResend() {
-    // this.userService.resendUserActivationLink(this.username, (err, data) => {
-    //   if (err) {
-    //     console.log(err);
-    //     this.errMessage = "The server cannot process your request. Please contact us to get your account activated";
-    //   } else {
-    //     this.errMessage = null;
-    //     this.successMessage = "Activation link resent. Please check your email!";
-    //   }
-    // })
+    });
   }
 }

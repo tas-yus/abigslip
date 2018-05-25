@@ -20,7 +20,7 @@ export class SettingComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, public authService: AuthService) {}
 
   ngOnInit() {
-    if (!this.authService.isMaster()) {
+    if (!this.authService.isSetting()) {
       return this.router.navigate(['/home']);
     }
     this.http.get<any[]>(`/api/courses?token=${this.authService.getToken()}`).subscribe((data) => {

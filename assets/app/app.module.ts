@@ -18,14 +18,19 @@ import { OrderListComponent } from './order/order-list/order-list.component';
 import { OrderSearchComponent } from './order/order-search/order-search.component';
 import { LoginComponent } from './login/login.component';
 import { SettingComponent } from './setting/setting.component';
-import { SettingCourseComponent } from './setting/setting-course/setting-course.component';
+import { SettingGroupComponent } from './setting/setting-group/setting-group.component';
+import { SettingGroupEditComponent } from './setting/setting-group-edit/setting-group-edit.component';
 import { SettingCourseEditComponent } from './setting/setting-course-edit/setting-course-edit.component';
 import { SettingUserComponent } from './setting/setting-user/setting-user.component';
+import { SettingCourseComponent } from './setting/setting-course/setting-course.component';
+import { SettingBookComponent } from './setting/setting-book/setting-book.component';
 import { HeaderComponent } from './header/header.component';
 import { MyDatePickerModule } from 'mydatepicker';
 
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth-guard.service';
+import { AdminGuard } from './admin-guard.service';
+import { SettingGuard } from './setting-guard.service';
 
 @NgModule({
     declarations: [
@@ -44,13 +49,16 @@ import { AuthGuard } from './auth-guard.service';
         BookListComponent,
         BookShowComponent,
         SettingComponent,
-        SettingCourseComponent,
+        SettingGroupComponent,
         SettingCourseEditComponent,
-        SettingUserComponent
+        SettingUserComponent,
+        SettingCourseComponent,
+        SettingBookComponent,
+        SettingGroupEditComponent
     ],
     imports: [BrowserModule, AppRoutingModule, FormsModule,
       HttpClientModule, MyDatePickerModule],
-    providers: [AuthService, AuthGuard],
+    providers: [AuthService, AuthGuard, AdminGuard, SettingGuard],
     bootstrap: [AppComponent]
 })
 export class AppModule {

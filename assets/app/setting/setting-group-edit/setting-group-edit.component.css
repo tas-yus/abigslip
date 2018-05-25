@@ -1,10 +1,3 @@
-.form {
-  width: 75%;
-  min-width: 300px;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
 .invalid-feedback {
   display: block;
 }
@@ -25,6 +18,11 @@
   color: #FC5F20;
 }
 
-.KTC {
-  color: #DB8E69;
+.bootstrap {
+  color: #3f69ff;
+}
+
+#highlighter div:hover {
+  background-color: #777;
+  color: white;
 }

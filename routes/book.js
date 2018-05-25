@@ -10,6 +10,7 @@ var async = require("async");
 var jwt = require("jsonwebtoken");
 var Book = require("../book");
 var User = require("../user");
+var Group = require("../group");
 
 var workbook = new Excel.Workbook();
 
@@ -35,7 +36,7 @@ router.get('/api/books', (req, res) => {
   if (req.query.branch) {
     matchObject.branch = req.query.branch;
   }
-  Book.find({}).select("title _id numBook orders updatedAt")
+  Book.find({}).select("title _id numBook orders updatedAt").sort({title: 1})
   .populate({path: "orders", match: matchObject})
   .exec((err, books) => {
     if (err) {
@@ -46,7 +47,7 @@ router.get('/api/books', (req, res) => {
 });
 
 router.get('/api/books/list', (req, res) => {
-  Book.find({}).select("title _id")
+  Book.find({}).select("title _id").sort({title: 1})
   .exec((err, books) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});
@@ -55,12 +56,31 @@ router.get('/api/books/list', (req, res) => {
   });
 });
 
-router.get('/api/books/courses', (req, res) => {
-  Course.find({}).sort({numUse: -1}).select("title _id numBook code price numUse").exec((err, courses) => {
+router.get('/api/groups', (req, res) => {
+  Group.find({}).sort({numUse: -1}).select("code price title numUse").exec((err, groups) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});
     }
-    res.status(200).send(courses);
+    res.status(200).send(groups);
+  });
+});
+
+router.get('/api/groups/:id/courses', (req, res) => {
+  Group.findById(req.params.id).populate({path: "courses", options: {sort: {numUse: -1}}}).exec((err, group) => {
+    if (err) {
+      return res.status(400).send({message: "something's wrong "});
+    }
+    res.status(200).send(group.courses);
+  });
+});
+
+
+router.get('/api/courses/:id/books', (req, res) => {
+  Course.findById(req.params.id).populate({path: "books", options: {sort: {title: 1}}}).exec((err, course) => {
+    if (err) {
+      return res.status(400).send({message: "something's wrong "});
+    }
+    res.status(200).send(course.books);
   });
 });
 

@@ -16,13 +16,14 @@ export class StudentShowComponent implements OnInit {
   date = null;
   success = null;
   price = null;
-  types = ['KTB', 'GSB', 'CS'];
+  types = ['KTB', 'GSB', 'CS', 'KTC'];
   model = null;
+  groups = [];
   courses = [];
   books = [];
-  course =  0;
+  group =  0;
+  course = 0;
   selectedBooks = [];
-  cancel = false;
   @ViewChild('selectMode') selectMode;
 
   public myDatePickerOptions: IMyDpOptions = {
@@ -35,7 +36,7 @@ export class StudentShowComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.params['id'];
-    this.requestCourses();
+    this.requestGroups();
     this.http.get<any[]>(`/api/students/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
       this.student = data;
     }, (err) => {
@@ -43,8 +44,20 @@ export class StudentShowComponent implements OnInit {
     });
   }
 
-  requestCourses() {
-    this.http.get<any[]>(`/api/books/courses?token=${this.authService.getToken()}`).subscribe((data) => {
+  requestGroups() {
+    this.http.get<any[]>(`/api/groups?token=${this.authService.getToken()}`).subscribe((data) => {
+      this.groups = data;
+      if (this.groups.length == 0) {
+        this.group = null;
+        this.books = [];
+      }
+    }, (err) => {
+      console.log(err);
+    });
+  }
+
+  requestCourses(id) {
+    this.http.get<any[]>(`/api/groups/${id}/courses?token=${this.authService.getToken()}`).subscribe((data) => {
       this.courses = data;
       if (this.courses.length == 0) {
         this.course = null;
@@ -56,7 +69,7 @@ export class StudentShowComponent implements OnInit {
   }
 
   requestBooks(id) {
-    this.http.get<any[]>(`/api/books/courses/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
+    this.http.get<any[]>(`/api/courses/${id}/books?token=${this.authService.getToken()}`).subscribe((data) => {
       this.books = data;
     }, (err) => {
       console.log(err);
@@ -65,7 +78,7 @@ export class StudentShowComponent implements OnInit {
 
   getCourse(id) {
     var results = this.courses.filter((o) => { return  o._id == id});
-    return results? results[0]:null;
+    return results? results[0]: null;
   }
 
   onAddCourse(form: NgForm) {
@@ -74,9 +87,10 @@ export class StudentShowComponent implements OnInit {
     const id = this.route.snapshot.params['id'];
     const branch = this.authService.getBranch();
     const books = this.selectedBooks;
+    const group = this.group;
     const course = this.course;
     var body:any = {
-      type: this.type, code, date, branch, books, course
+      type: this.type, code, date, branch, books, group, course
     };
     this.http.post<any>(`/api/students/${id}/courses?token=${this.authService.getToken()}`, body).subscribe((data) => {
       this.http.get<any[]>(`/api/students/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
@@ -84,6 +98,7 @@ export class StudentShowComponent implements OnInit {
         this.success = null;
         this.date = null;
         this.type = null;
+        this.group = 0;
         this.course = 0;
         this.selectMode.nativeElement.value = "";
       }, (err) => {
@@ -120,11 +135,21 @@ export class StudentShowComponent implements OnInit {
     this.date = e.formatted;
   }
 
-  onSelectCourse(course) {
-    if (this.course) {
+  onSelectGroup() {
+    this.selectedBooks = [];
+    this.courses = [];
+    this.course = 0;
+    if (this.group != 0) {
+      this.requestCourses(this.group);
+    }
+  }
+
+  onSelectCourse() {
+    this.selectedBooks = [];
+    this.books = [];
+    if (this.course != 0) {
       this.requestBooks(this.course);
     }
-    this.selectedBooks = [];
   }
 
   onSelectBooks(e) {
@@ -133,5 +158,14 @@ export class StudentShowComponent implements OnInit {
     } else {
       this.selectedBooks = this.selectedBooks.filter((o) => { return o !== e.srcElement.value });
     }
+  }
+
+  validate(type, str) {
+    if (type == 1 || type == 2) {
+      var validator = /0\d{9}/;
+    } else {
+      var validator = /^\d{10}$/;
+    }
+    return validator.test(str);
   }
 }

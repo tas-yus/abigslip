@@ -42,7 +42,7 @@ router.get('/api/orders', allowAdmin, (req, res) => {
         $lt: to
     },
   };
-  Order.find(queryObject).populate("claimedBy").sort({updatedAt: 1}).limit(limit).exec((err, orders) => {
+  Order.find(queryObject).populate("claimedBy").sort({updatedAt: -1}).limit(limit).exec((err, orders) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});
     }
@@ -92,6 +92,7 @@ router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
           order.claimedAt = new Date();
           order.branch = oldOrder.branch;
           order.books = oldOrder.books;
+          order.group = oldOrder.group;
           order.course = oldOrder.course;
           async.forEach(oldOrder.books, (book, callback) => {
             Book.findByIdAndUpdate(book, { $push: { orders: order._id  }}, (err, book) => {
@@ -280,7 +281,8 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
 
 router.get("/api/orders/:id", allowAdmin, (req, res) => {
   Order.findById(req.params.id).populate({path: "claimedBy", select: "firstname lastname _id"})
-  .populate("course").populate({path: "books", select: "title"})
+  .populate({path: "course", select: "title"})
+  .populate({path: "books", select: "title"})
   .exec((err, order) => {
     if (err) {
       console.log(err);

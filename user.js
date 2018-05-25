@@ -5,7 +5,7 @@ var Userschema = new mongoose.Schema({
     password: {type: String, required: true},
     branch: {type: Number, required: true, unique: true},
     isAdmin: {type: Boolean, default: false},
-    isMaster: {type: Boolean, default: false}
+    isSetting: {type: Boolean, default: false}
 });
 
 module.exports = mongoose.model('User', Userschema);

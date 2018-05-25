@@ -14,19 +14,19 @@
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <ng-template [ngIf]="authService.isAuthenticated()">
           <li class="nav-item">
-            <a class="nav-link text-light" routerLink="/home">{{authService.isAdmin()||authService.isMaster()? '':'สาขา'}} {{authService.getBranchString()}}</a>
+            <a class="nav-link text-light" routerLink="/home">{{authService.isAdmin()||authService.isSetting()? '':'สาขา'}} {{authService.getBranchString()}}</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-light" *ngIf="!authService.isMaster()" routerLink="/students">Students</a>
+            <a class="nav-link text-light" *ngIf="!authService.isSetting()" routerLink="/students">Students</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-light" *ngIf="!authService.isMaster()" routerLink="/books">Books</a>
+            <a class="nav-link text-light" *ngIf="!authService.isSetting()" routerLink="/books">Books</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-light" *ngIf="authService.isAdmin() && !authService.isMaster()" routerLink="/orders">Slips</a>
+            <a class="nav-link text-light" *ngIf="authService.isAdmin() && !authService.isSetting()" routerLink="/orders">Slips</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-light" *ngIf="authService.isMaster()" routerLink="/settings">Settings <i class="fa fa-cog"></i></a>
+            <a class="nav-link text-light" *ngIf="authService.isSetting()" routerLink="/settings">Settings <i class="fa fa-cog"></i></a>
           </li>
           <li class="nav-item">
             <a class="nav-link text-light" style="cursor: pointer" (click)="onLogoutUser()">Logout</a>
