@@ -132,13 +132,13 @@ function seedDB() {
     {
       title: 'Organic Chem',
       code: 4,
-      numBook: 2,
+      numBook: 1,
       bookCodes: [44,45]
     },
     {
       title: 'เคมีม.ปลาย',
       code: 5,
-      numBook: 4,
+      numBook: 3,
       bookCodes: [15,16,17,18,19,20,22,23,24,25,26,27,28,29,30]
     },
     {
