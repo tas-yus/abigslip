@@ -29,6 +29,23 @@
   color: #DB8E69;
 }
 
+.FREE {
+  color: #93E137;
+}
+
 a {
   text-decoration: none;
+}
+
+.fa-ban {
+  color: #ddd;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.fa-ban:hover {
+  color: #FC5C5F;
+  text-shadow: 0.5px 0.5px 0.5px red;
+  -webkit-transition: all 0.5s; /* Safari */
+   transition: all 0.5s;
 }

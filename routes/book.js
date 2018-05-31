@@ -57,7 +57,7 @@ router.get('/api/books/list', (req, res) => {
 });
 
 router.get('/api/groups', (req, res) => {
-  Group.find({}).sort({code: 1}).select("code price title numUse").exec((err, groups) => {
+  Group.find({price: {$gte: 1}}).sort({code: 1}).select("code price title numUse courses").exec((err, groups) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});
     }

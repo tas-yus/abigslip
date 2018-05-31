@@ -36,17 +36,24 @@ router.get('/api/orders', allowAdmin, (req, res) => {
   var limit = req.query.limit? Number(req.query.limit) : 100;
   var from = new Date(req.query.year, req.query.month, 1);
   var to = new Date(req.query.year, req.query.month, 31);
+  var type = req.query.type;
   var queryObject = {
-    updatedAt: {
+    date: {
         $gte: from,
         $lt: to
     },
+    void: false
   };
+  if (type != 0 && type != 6) {
+    queryObject.type = type;
+  } else if (type == 6) {
+    queryObject.void = true;
+  }
   Order.find(queryObject).populate("claimedBy").sort({updatedAt: -1}).limit(limit).exec((err, orders) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});
     }
-    Order.count({}, (err, count) => {
+    Order.count(queryObject, (err, count) => {
       if (err) {
         return res.status(400).send({message: "something's wrong "});
       }
@@ -131,12 +138,11 @@ router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
 });
 
 router.get("/api/orders/search", allowAdmin, (req, res) => {
-  var limit = req.query.limit? Number(req.query.limit) : 5;
+  var limit = req.query.limit? Number(req.query.limit) : 100;
   var query;
   var date;
   if (req.query.date) {
     date = parseDate(req.query.date);
-    console.log(date)
   }
   if (req.query.code && req.query.date) {
     query = {
@@ -178,10 +184,13 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
   var countMatched = 0;
   var countAdded = 0;
   var corrupted = false;
+  var readSheets = [];
+  var claimedOrders = [];
   workbook.xlsx.readFile(path.join(__dirname, '../public/', req.body.filename)).then(function() {
     async.forEachSeries((sheets), (sheet, callback) => {
       var worksheet = workbook.getWorksheet(sheet.name);
       if (!worksheet) {
+        corrupted = true;
         return callback();
       }
       var count = 1;
@@ -190,48 +199,37 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
           count++;;
           return;
         }
-        if (sheet.type == 4) {
-          if (rowNumber == 1 && (row.values[1] != "วันที่สมัคร"  || row.values[2] != "ค่าเรียน")) {
-            corrupted = true;
-          }
-        } else {
-          if (rowNumber == 1 && (row.values[1] != "Confirm Code" || row.values[2] != "โทรศัพท์" || row.values[3] != "ค่าเรียน"
-          || row.values[5] != "วันที่สมัคร" || row.values[6] != "รหัสคอร์ส")) {
-            corrupted = true;
-          }
+        if (rowNumber == 1 && (row.values[1] != "Confirm Code" || row.values[2] != "โทรศัพท์" || row.values[3] != "ค่าเรียน"
+        || row.values[5] != "วันที่สมัคร" || row.values[6] != "รหัสคอร์ส")) {
+          corrupted = true;
+          return callback();
         }
-        if (rowNumber > 1) {
-          if (sheet.type == 4) {
-            var date = parseDate(row.values[1], sheet.type);
-          } else {
-            var date = parseDate(row.values[5], sheet.type);
+        if (rowNumber > 1 && !corrupted) {
+          if (rowNumber == 2) {
+            readSheets.push(sheet.name);
           }
-          if (sheet.type != 4) {
-            if (sheet.type == 3) {
-              var code = row.values[1];
-            } else  {
-              var code = row.values[2].replace(/-/g,'');
-            }
+          var date = parseDate(row.values[5], sheet.type);
+          if (sheet.type == 3) {
+            var code = row.values[1];
+          } else if (sheet.type != 4)  {
+            var code = row.values[2].replace(/-/g,'');
             code = String(code).trim();
-            var courseCode = String(row.values[6]).trim();
-            var price = row.values[3];
-          } else {
-            var price = row.values[2];
           }
-          if (sheet.type == 4) {
-            var queryObject = {
-              date, type: sheet.type, price
-            };
-          } else {
-            var queryObject = {
-              code, date, type: sheet.type, courseCode, price
-            };
+          var courseCode = String(row.values[6]).trim();
+          var price = row.values[3];
+          var queryObject = {
+            date, type: sheet.type, price, courseCode
+          };
+          if (sheet.type != 4) {
+            queryObject.code = code;
           }
-          Order.findOne(queryObject, (err, order) => {
+          Order.find(queryObject, (err, orders) => {
             if (err) {
               console.log(err);
               return res.status(400).send({message: "something's wrong"});
             }
+            orders = orders.filter((o) => {return !claimedOrders.includes(o._id.toString()) });
+            var order = orders[0];
             if (order && order.createdByServer === true) {
               count++;
               if (count === worksheet.actualRowCount) {
@@ -247,15 +245,16 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
               return;
             }
             countAdded++;
-            if (order) {
+            if (order && !claimedOrders.includes(orders._id.toString())) {
+              claimedOrders.push(orders._id.toString());
               countMatched++;
-              Student.findByIdAndUpdate(order.claimedBy, {lastOrder: order._id}, (err) => {
+              Student.findByIdAndUpdate(orders.claimedBy, {lastOrder: orders._id}, (err) => {
                 if (err) {
                   console.log(err);
                   return res.status(400).send({message: "something's wrong"});
                 }
-                order.claimed = true;
-                order.save((err, order) => {
+                orders.claimed = true;
+                orders.save((err, order) => {
                   if (err) {
                     console.log(err);
                     return res.status(400).send({message: "something's wrong"});
@@ -289,16 +288,17 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
         return res.status(400).send({message: "something's wrong"})
       }
       if (countAdded == 0 && !corrupted) {
-        return res.status(200).send({message: "อัพเดทลงฐานข้อมูลสำเร็จ", countMatched, countAdded});
+        return res.status(200).send({message: `อัพเดทฐานข้อมูลสำเร็จ! // เพิ่ม slip ${countAdded} รายการ // match ${countMatched} รายการ`});
       }
-      if (countAdded == 0 && corrupted) {
+      if (corrupted && readSheets.length == 0) {
         return res.status(400).send({message: "ไฟล์ผิด Format ไม่มีหน้าไหนถูกอ่าน", countMatched, countAdded});
       }
-      if (countAdded != 0 && corrupted) {
-        return res.status(200).send({message: "อ่านข้อมูลบางส่วนเพราะ format ผิด", countMatched, countAdded});
+      if (corrupted && readSheets.length != 0) {
+        return res.status(200).send({message: "อ่านข้อมูลบางส่วนเพราะ format ผิด //" +
+        ` อ่าน ${readSheets.toString()} // เพิ่ม slip ${countAdded} รายการ // match ${countMatched} รายการ`});
       }
       if (countAdded != 0 && !corrupted){
-        res.status(200).send({message: "อัพเดทลงฐานข้อมูลสำเร็จ", countMatched, countAdded});
+        return res.status(200).send({message: `อัพเดทฐานข้อมูลสำเร็จ! // เพิ่ม slip ${countAdded} รายการ // match ${countMatched} รายการ`});
       }
     });
   }).catch((err) => {
@@ -323,6 +323,16 @@ router.get("/api/orders/:id", allowAdmin, (req, res) => {
   });
 });
 
+router.put("/api/orders/:id/void", allowAdmin, (req, res) => {
+  Order.findByIdAndUpdate(req.params.id, {void: req.body.void}, (err, order) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).send({err, message: "Something went wrong"});
+    }
+    return res.status(200).send({});
+  });
+});
+
 router.post('/api/slips/upload', allowAdmin, (req, res) => {
   processFormBody(req, res, function (err) {
     if (err) {
@@ -333,7 +343,7 @@ router.post('/api/slips/upload', allowAdmin, (req, res) => {
       return res.status(400).send({message: "โปรดอัพโหลดไฟล์"});
     }
     if (extractFileType(req.file.originalname) != "xlsx") {
-      return res.status(400).send({message: "โปรดอัพโหลดไฟล์ excel นามสกุล .xlsx หรือ .xls เท่านั้น"});
+      return res.status(400).send({message: "โปรดอัพโหลดไฟล์ excel นามสกุล .xlsx เท่านั้น"});
     }
     // request.file has the following properties of interest
     //      fieldname      - Should be 'uploadedphoto' since that is what we sent
@@ -391,8 +401,10 @@ router.post("/api/excel", allowAdmin, (req, res) => {
           $gte: from,
           $lt: to
         }
+      }],
+      price: {
+        $gte: 1
       }
-      ]
     };
   } else if (type == 2) {
     queryObject = {
@@ -419,7 +431,7 @@ router.post("/api/excel", allowAdmin, (req, res) => {
       var workbook = new Excel.Workbook();
       var worksheet = workbook.addWorksheet("Sheet1");
       var rows = [["วันที่", "รหัสโอน", "รหัสคอร์ส", "ราคา", "รูปแบบ", "สาขา", "เคลมแล้ว?", "วันที่เคลม", "ชื่อนักเรียน"]];
-      var types = ["KTB", "GSB", "CS"];
+      var types = ["KTB", "GSB", "CS", "KTC", "FREE"];
       const branchArray = [
         "Admin",
         "BG", "BW", "BB",

@@ -18,13 +18,14 @@
       </div>
     </div>
     <p><span class="font-weight-bold">ข้อมูลการจ่ายหนังสือ: </span>{{book.orders.length !== 0? '': 'ยังไม่มีการออกหนังสือเล่มนี้ตามเวลาที่ระบุ'}}</p>
-    <table *ngIf="book.orders.length !== 0" class="form table my-2 text-center">
+    <table *ngIf="book.orders.length !== 0" class="table my-2 text-center">
       <thead class="thead">
         <tr>
           <th>#</th>
           <th>ชื่อเด็ก</th>
           <th>รูปแบบ</th>
           <th>โค้ดสลิป</th>
+          <th>match กับระบบ</th>
           <th>สาขา</th>
           <th>หนังสือออกเมื่อ</th>
         </tr>
@@ -33,7 +34,13 @@
         <td class="font-weight-bold">{{i + 1}}</td>
         <td><a routerLink="/students/{{order.claimedBy._id}}">{{order.claimedBy.firstname}} {{order.claimedBy.lastname}}</a></td>
         <td class="{{types[order.type-1]}} font-weight-bold">{{types[order.type-1]}}</td>
-        <td><a routerLink="/orders/{{order._id}}/edit">{{order.code}}</a></td>
+        <td>
+          <a *ngIf="order.code" routerLink="/orders/{{order._id}}/edit">{{order.code}}</a>
+          <a *ngIf="!order.code">-</a>
+        </td>
+        <td>
+          <i class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i>
+        </td>
         <td>{{branchArray[order.branch]}}</td>
         <td>{{getDate(order.updatedAt)}}</td>
       </tr>

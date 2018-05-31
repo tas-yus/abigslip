@@ -58,21 +58,21 @@ router.post('/api/students/:id/courses', (req, res) => {
         var queryObject = {
           type: req.body.type,
           price: group.price,
-          date: parseDate(req.body.date)
+          date: parseDate(req.body.date),
+          courseCode: group.code
         };
       }
-      Order.findOne(queryObject, (err, order) => {
+      Order.find(queryObject, (err, orders) => {
         if (err) {
           console.log(err);
           return res.status(400).send({message: "something's wrong"});
         }
-        if (order) {
-          if (!order.createdByServer) {
-            return res.status(400).send({message: "เคยสร้างรายการโอนนี้แล้ว"});
-          }
-          if (order.claimed) {
-            return res.status(400).send({message: "สลิปใช้ไปแล้ว"});
-          }
+        orders = orders.filter((o) => { return !o.claimed });
+        var order = orders[0];
+        // if (!order) {
+        //   return res.status(405).send({message: "มีสลิปที่เคยสร้างไว้แบบเดียวกัน"});
+        // }
+        if (order && order.createdByServer) {
           order.claimed = true;
           order.claimedAt = new Date();
           order.claimedBy = student._id;
@@ -125,6 +125,7 @@ router.post('/api/students/:id/courses', (req, res) => {
             newOrder.claimedAt = new Date();
             newOrder.code = null;
           } else {
+            newOrder.claimedAt = new Date();
             newOrder.code = req.body.code;
           }
           newOrder.save((err, order) => {
@@ -152,7 +153,7 @@ router.post('/api/students/:id/courses', (req, res) => {
                   console.log(err);
                   return res.status(400).send({message: "something's wrong"});
                 }
-                res.status(200).send({message: "course added to student", id: student._id});
+                res.status(200).send({message: "course added to student", id: student._id, orderId: order._id});
               });
             });
           });
@@ -185,7 +186,7 @@ router.get("/api/students/search", (req, res) => {
 
 router.get("/api/students", (req, res) => {
   var limit = req.query.limit? Number(req.query.limit) : 100;
-  Student.find({}).populate('lastOrder').sort({updatedAt: -1})
+  Student.find({}).populate({path: 'lastOrder', match: {void: false}}).sort({updatedAt: -1})
   .limit(limit).exec((err, students) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});

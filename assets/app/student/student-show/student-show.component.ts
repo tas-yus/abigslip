@@ -14,7 +14,6 @@ export class StudentShowComponent implements OnInit {
   student = null;
   type = null;
   date = null;
-  success = null;
   price = null;
   types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
   model = null;
@@ -26,6 +25,8 @@ export class StudentShowComponent implements OnInit {
   selectedBooks = [];
   loading = false;
   free = false;
+  errMessage = null;
+  successMessage = null;
   @ViewChild('selectMode') selectMode;
 
   public myDatePickerOptions: IMyDpOptions = {
@@ -94,6 +95,11 @@ export class StudentShowComponent implements OnInit {
     return results? results[0]: null;
   }
 
+  getGroup(id) {
+    var results = this.groups.filter((o) => { return  o._id == id});
+    return results? results[0]: null;
+  }
+
   onAddCourse(form: NgForm) {
     const date = this.date;
     const code = form.value.code;
@@ -107,20 +113,37 @@ export class StudentShowComponent implements OnInit {
     };
     this.loading = true;
     this.http.post<any>(`/api/students/${id}/courses?token=${this.authService.getToken()}`, body).subscribe((data) => {
+      var orderId = data.orderId;
       this.http.get<any[]>(`/api/students/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
         this.loading = false;
         this.student = data;
-        this.success = null;
         this.date = null;
         this.type = null;
         this.group = 0;
         this.course = 0;
         this.selectMode.nativeElement.value = "";
+        this.successMessage = "เพิ่มรายการโอนสำเร็จ โปรดตรวจเช็ค";
+        setTimeout(() => {
+          document.querySelector('#o' + orderId).scrollIntoView();
+        });
+        setTimeout(() => {
+          this.successMessage = null;
+        }, 3000);
       }, (err) => {
-        console.log(err);
+        this.loading = false;
+        this.router.navigate(['/home']);
       });
     }, (err) => {
-      console.log(err);
+      this.loading = false;
+      // this.date = null;
+      // this.type = null;
+      // this.group = 0;
+      // this.course = 0;
+      // this.selectMode.nativeElement.value = "";
+      this.errMessage = err.error.message;
+      setTimeout(() => {
+        this.errMessage = null;
+      }, 3000);
     });
   }
 
@@ -190,12 +213,26 @@ export class StudentShowComponent implements OnInit {
   }
 
   validate(type, str) {
-    if (type == 5 || 4) return true;
+    if (type == 5 || type == 4) return true;
     if (type == 1 || type == 2) {
       var validator = /0\d{9}/;
     } else if (type == 3){
       var validator = /^\d{10}$/;
     }
     return validator.test(str);
+  }
+
+  canAdd() {
+    if (this.type < 1 || this.type > 5) return false;
+    if (!this.date) return false;
+    if (this.group == 0) return false;
+    if (this.getGroup(this.group).courses && this.getGroup(this.group).courses.length !== 0) {
+      if (this.course == 0) return false;
+      if (this.getCourse(this.course).strict && this.selectedBooks.length !== this.getCourse(this.course).numBook) return false;
+      if (this.selectedBooks.length > this.getCourse(this.course).numBook) return false;
+    } else {
+      return true;
+    }
+    return true;
   }
 }

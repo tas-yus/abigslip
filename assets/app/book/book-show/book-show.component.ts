@@ -12,7 +12,7 @@ import { AuthService } from '../../auth.service';
 export class BookShowComponent implements OnInit {
   book = null;
   search = false;
-  types = ['KTB', 'GSB', 'CS'];
+  types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
   errorMessage1 = null;
   count = null;
   limit = 100;

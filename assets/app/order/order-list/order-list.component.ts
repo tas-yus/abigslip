@@ -13,9 +13,11 @@ export class OrderListComponent implements OnInit {
   orders = [];
   loading = false;
   search = false;
-  types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
+  types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE', 'เสีย'];
+  typeOptions = ['All', 'KTB', 'GSB', 'CS', 'KTC', 'FREE', 'เสีย'];
   errorMessage1 = null;
   count = null;
+  type = 0;
   limit = 100;
   month = new Date().getMonth();
   year = new Date().getFullYear();
@@ -32,7 +34,7 @@ export class OrderListComponent implements OnInit {
 
   getOrders() {
     this.loading = true;
-    this.http.get<any>(`/api/orders?token=${this.authService.getToken()}&&limit=${this.limit}&&month=${this.month}&&year=${this.year}`).subscribe((data) => {
+    this.http.get<any>(`/api/orders?token=${this.authService.getToken()}&&limit=${this.limit}&&month=${this.month}&&year=${this.year}&&type=${this.type}`).subscribe((data) => {
       this.orders = data.orders;
       this.count = data.count;
       this.loading = false;

@@ -80,9 +80,7 @@
 
 
         <div class="form-group text-right">
-            <button (click)="onAddCourse(f); f.reset()" [disabled]="!f.form.valid && type != 5 || type < 1 || type > 5
-            || !date || !course || getCourse(course).strict && selectedBooks.length !== getCourse(course).numBook || selectedBooks.length > getCourse(course).numBook
-            || !validate(type, f.value.code)" class="btn btn-primary">Add</button>
+            <button (click)="onAddCourse(f); f.reset()" [disabled]="!f.form.valid && type != 5 || !canAdd() || !validate(type, f.value.code)" class="btn btn-primary">Add</button>
         </div>
         <span class="invalid-feedback" *ngIf="errMessage">
           *{{errMessage}}
@@ -97,7 +95,7 @@
 
   <p><span class="font-weight-bold">สรุปรายการโอน ({{student.orders.length}}):</span></p>
     <div class="card my-2" *ngFor="let order of student.orders">
-      <div style="cursor:pointer" routerLink="{{authService.isAdmin()? '/orders/'+ order._id + '/edit': '/students/' + student._id}}" class="card-header {{types[order.type-1]}}">
+      <div id="o{{order._id}}" style="cursor:pointer" routerLink="{{authService.isAdmin()? '/orders/'+ order._id + '/edit': '/students/' + student._id}}" class="card-header {{types[order.type-1]}}">
         <h5 class="my-0 text-white">{{types[order.type-1]}}</h5>
       </div>
       <div class="card-body">

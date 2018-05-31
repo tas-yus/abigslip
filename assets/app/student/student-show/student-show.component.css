@@ -17,3 +17,11 @@
 .FREE {
   background-color: #93E137;
 }
+
+.invalid-feedback {
+  display: block;
+}
+
+.valid-feedback {
+  display: block;
+}

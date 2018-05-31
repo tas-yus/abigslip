@@ -30,8 +30,8 @@ app.set('view engine', 'hbs');
 // uncomment after placing your favicon in /public
 // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-// mongoose.connect("mongodb://localhost:27017/abigslip");
-mongoose.connect("mongodb://test:test@ds016298.mlab.com:16298/abigslip");
+mongoose.connect("mongodb://localhost:27017/abigslip");
+// mongoose.connect("mongodb://test:test@ds016298.mlab.com:16298/abigslip");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -55,7 +55,7 @@ app.use(function (req, res, next) {
     return res.render('index');
 });
 
-// seedDB();
+seedDB();
 
 function seedDB() {
   var books = [
@@ -138,7 +138,7 @@ function seedDB() {
     {
       title: 'เคมีม.ปลาย',
       code: 5,
-      numBook: 4,
+      numBook: 3,
       bookCodes: [15,16,17,18,19,20,22,23,24,25,26,27,28,29,30]
     },
     {

@@ -111,11 +111,11 @@ export class StudentAddComponent implements OnInit {
       this.http.post<any>(`/api/orders/parse?token=${this.authService.getToken()}`, {filename: data.filename}).subscribe((data) => {
         this.loading = false;
         this.disabled = false;
-        this.successMessage = `อัพเดทฐานข้อมูลสำเร็จ! // เพิ่ม slip ${data.countAdded} รายการ // match ${data.countMatched} รายการ`
+        this.successMessage = data.message;
         this.onReset();
         setTimeout(() => {
           this.successMessage = null;
-        }, 3000)
+        }, 10000)
       }, (err) => {
         this.disabled = false;
         this.loading = false;

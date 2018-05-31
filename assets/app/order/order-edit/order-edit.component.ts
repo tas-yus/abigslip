@@ -5,6 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../auth.service';
 import { IMyDpOptions} from 'mydatepicker';
 
+declare var $:any;
+
 @Component({
     selector: 'order-edit',
     templateUrl: './order-edit.component.html',
@@ -22,7 +24,7 @@ export class OrderEditComponent implements OnInit {
   canEdit = true;
   errorMessage1 = null;
   loading = false;
-  types = ['KTB', 'GSB', 'CS', 'KTC'];
+  types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
 
   @ViewChild('selectMode') selectMode;
 
@@ -91,6 +93,16 @@ export class OrderEditComponent implements OnInit {
       setTimeout(() => {
         this.errorMessage1 = null;
       }, 3000);
+    });
+  }
+
+  onVoidOrder() {
+    const id = this.route.snapshot.params['id'];
+    this.http.put<any>(`/api/orders/${id}/void?token=${this.authService.getToken()}`, {void: true}).subscribe((data) => {
+      this.requestOrder(id);
+      $('#exampleModal').modal('hide');
+    }, (err) => {
+      this.router.navigate(['/home']);
     });
   }
 }
