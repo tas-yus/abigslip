@@ -10,7 +10,7 @@
         </span> -->
       </div>
       <div class="form-group">
-        <input type="text" (input)="search(lastname.value)" name="lastname" class="form-control"
+        <input type="text" (input)="search(lastname.value)" name="lastname" class="form-control" autocomplete="off"
         placeholder="นามสกุล" ngModel required #lastname="ngModel"
         [class.is-invalid]="!lastname.valid && lastname.touched">
         <!-- <span class="invalid-feedback" *ngIf="!lastname.valid && lastname.touched">

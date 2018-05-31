@@ -149,9 +149,13 @@ export class StudentAddComponent implements OnInit {
     const from = this.model1.formatted;
     const to = this.model2.formatted;
     const type = this.type;
+    this.output = null;
     this.http.post<any>(`/api/excel?token=${this.authService.getToken()}`, {from, to, type}).subscribe((data) => {
       this.type = 1;
       this.output = data.filename;
+      setTimeout(() => {
+        this.output = null;
+      }, 300000)
       form.reset();
     }, (err) => {
       this.errorMessage5 = err.error.message;
