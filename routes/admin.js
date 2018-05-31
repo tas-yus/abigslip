@@ -245,16 +245,16 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
               return;
             }
             countAdded++;
-            if (order && !claimedOrders.includes(orders._id.toString())) {
+            if (order && !claimedOrders.includes(order._id.toString())) {
               claimedOrders.push(orders._id.toString());
               countMatched++;
-              Student.findByIdAndUpdate(orders.claimedBy, {lastOrder: orders._id}, (err) => {
+              Student.findByIdAndUpdate(order.claimedBy, {lastOrder: order._id}, (err) => {
                 if (err) {
                   console.log(err);
                   return res.status(400).send({message: "something's wrong"});
                 }
-                orders.claimed = true;
-                orders.save((err, order) => {
+                order.claimed = true;
+                order.save((err, order) => {
                   if (err) {
                     console.log(err);
                     return res.status(400).send({message: "something's wrong"});
