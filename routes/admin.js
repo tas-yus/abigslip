@@ -246,7 +246,7 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
             }
             countAdded++;
             if (order && !claimedOrders.includes(order._id.toString())) {
-              claimedOrders.push(orders._id.toString());
+              claimedOrders.push(order._id.toString());
               countMatched++;
               Student.findByIdAndUpdate(order.claimedBy, {lastOrder: order._id}, (err) => {
                 if (err) {
