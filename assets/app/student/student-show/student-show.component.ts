@@ -85,6 +85,9 @@ export class StudentShowComponent implements OnInit {
   requestBooks(id) {
     this.http.get<any[]>(`/api/courses/${id}/books?token=${this.authService.getToken()}`).subscribe((data) => {
       this.books = data;
+      if (this.books.length == this.getCourse(id).numBook) {
+        this.selectedBooks = this.books;
+      }
     }, (err) => {
       console.log(err);
     });
@@ -121,6 +124,7 @@ export class StudentShowComponent implements OnInit {
         this.type = null;
         this.group = 0;
         this.course = 0;
+        this.courses = [];
         this.selectMode.nativeElement.value = "";
         this.successMessage = "เพิ่มรายการโอนสำเร็จ โปรดตรวจเช็ค";
         setTimeout(() => {
@@ -234,5 +238,10 @@ export class StudentShowComponent implements OnInit {
       return true;
     }
     return true;
+  }
+
+  check(book) {
+    var books = this.selectedBooks.filter((o) => { return o._id.toString() == book });
+    return !!books[0];
   }
 }

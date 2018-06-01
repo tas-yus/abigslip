@@ -36,9 +36,6 @@ router.get('/api/books', (req, res) => {
     },
     void: false
   };
-  console.log(from);
-  console.log(to);
-  console.log(req.query.branch);
   if (req.query.branch != 0) {
     matchObject.branch = req.query.branch;
   }

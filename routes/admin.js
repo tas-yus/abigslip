@@ -34,8 +34,11 @@ router.use('/api/', (req, res, next) => {
 
 router.get('/api/orders', allowAdmin, (req, res) => {
   var limit = req.query.limit? Number(req.query.limit) : 100;
+  var daysInMonth = function (month, year) {
+      return new Date(year, month, 0).getDate();
+  }
   var from = new Date(req.query.year, req.query.month, 1);
-  var to = new Date(req.query.year, req.query.month, 31);
+  var to = new Date(req.query.year, req.query.month, daysInMonth(Number(req.query.month)+1, req.query.year) + 1);
   var type = req.query.type;
   var queryObject = {
     date: {
@@ -49,7 +52,7 @@ router.get('/api/orders', allowAdmin, (req, res) => {
   } else if (type == 6) {
     queryObject.void = true;
   }
-  Order.find(queryObject).populate("claimedBy").sort({updatedAt: -1}).limit(limit).exec((err, orders) => {
+  Order.find(queryObject).populate("claimedBy").sort({date: 1}).limit(limit).exec((err, orders) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});
     }
@@ -144,12 +147,13 @@ router.get("/api/orders/search", allowAdmin, (req, res) => {
   if (req.query.date) {
     date = parseDate(req.query.date);
   }
+  var code = String(req.query.code).replace(/[^\w\s]/gi, '').trim();
   if (req.query.code && req.query.date) {
     query = {
-      $and:[{code:{$regex: String(req.query.code).trim(), $options: 'i'}}, {date}],
+      $and:[{code:{$regex: code, $options: 'i'}}, {date}],
     }
   } else if(req.query.code && !req.query.date) {
-    query = {code: {$regex: String(req.query.code).trim(), $options: 'i'}};
+    query = {code: {$regex: code, $options: 'i'}};
   } else if (!req.query.code && req.query.date) {
     query = {date};
   } else {
@@ -212,9 +216,9 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
           if (sheet.type == 3) {
             var code = row.values[1];
           } else if (sheet.type != 4)  {
-            var code = row.values[2].replace(/-/g,'');
-            code = String(code).trim();
+            var code = row.values[2];
           }
+          code = String(code).replace(/[^\w\s]/gi, '');
           var courseCode = String(row.values[6]).trim();
           var price = row.values[3];
           var queryObject = {
