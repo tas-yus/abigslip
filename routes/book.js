@@ -24,16 +24,22 @@ router.use('/api/', (req, res, next) => {
 });
 
 router.get('/api/books', (req, res) => {
+  var daysInMonth = function (month, year) {
+      return new Date(year, month, 0).getDate();
+  }
   var from = new Date(req.query.year, req.query.month, 1);
-  var to = new Date(req.query.year, req.query.month, 31);
+  var to = new Date(req.query.year, req.query.month, daysInMonth(Number(req.query.month)+1, req.query.year) + 1);
   var matchObject = {
-    updatedAt: {
+    claimedAt: {
         $gte: from,
         $lt: to
     },
     void: false
   };
-  if (req.query.branch) {
+  console.log(from);
+  console.log(to);
+  console.log(req.query.branch);
+  if (req.query.branch != 0) {
     matchObject.branch = req.query.branch;
   }
   Book.find({}).select("title _id numBook orders updatedAt").sort({title: 1})
