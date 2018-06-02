@@ -27,7 +27,7 @@
         </div>
 
         <div class="text-right">
-          <button (click)="onEditCourse()" class="btn btn-primary" [disabled]="ngCourse.numBook > course.books.length || ngCourse.numBook < 0 || ngCourse.numBook == null">Edit</button>
+          <button (click)="onEditCourse()" class="btn btn-primary" [disabled]="course.books.length != 0 && ngCourse.numBook > course.books.length || ngCourse.numBook < 0 || ngCourse.numBook == null">Edit</button>
         </div>
       </div>
 

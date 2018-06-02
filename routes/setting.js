@@ -149,13 +149,15 @@ router.get('/api/settings/courses', allowSetting, (req, res, next) => {
 router.post('/api/settings/courses', allowSetting, (req, res, next) => {
   Course.findOne({title: req.body.title}, (err, course) => {
     if (err) {
+      console.log(err);
       return res.status(400).send({message: "something's wrong"});
     }
     if (course) {
-      return res.status(400).send({message: "มีหนังสือชื่อนี้อยู่แล้ว"});
+      return res.status(400).send({message: "มีคอร์สชื่อนี้อยู่แล้ว"});
     }
     Course.create({title: req.body.title, numBook: req.body.numBook}, (err, course) => {
       if (err) {
+        console.log(err);
         return res.status(400).send({message: "something's wrong"});
       }
       res.status(200).send(course);

@@ -20,7 +20,6 @@ var CourseSchema = new mongoose.Schema({
   ],
   code: {
     type: Number,
-    required: true,
   },
   numBook: {
     type: Number,

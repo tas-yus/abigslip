@@ -85,7 +85,7 @@ export class StudentShowComponent implements OnInit {
   requestBooks(id) {
     this.http.get<any[]>(`/api/courses/${id}/books?token=${this.authService.getToken()}`).subscribe((data) => {
       this.books = data;
-      if (this.books.length == this.getCourse(id).numBook) {
+      if (this.books.length == this.getCourse(id).numBook && this.getCourse(id).strict) {
         this.selectedBooks = this.books;
       }
     }, (err) => {

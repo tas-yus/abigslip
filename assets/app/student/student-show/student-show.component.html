@@ -62,12 +62,13 @@
           <div class="form-group" *ngIf="type && group != 0 && course != 0 && books.length >= 1 && getCourse(course)">
             <p>โปรดเลือกหนังสือ {{getCourse(course).numBook}} รายการ {{getCourse(course).strict? '':'หรือน้อยกว่า (ขึ้นกับคอร์สเรียนที่น้องสมัคร)'}}</p>
             <div *ngFor="let book of books">
-              <input (change)="onSelectBooks($event)" type="checkbox" [checked]="check(book._id)" value="{{book._id}}"
+              <input (change)="onSelectBooks($event)" type="checkbox" [checked]="getCourse(course).strict && check(book._id)" value="{{book._id}}"
               [disabled]="selectedBooks.length >= getCourse(course).numBook">
               {{book.title}}
             </div>
           </div>
 
+          <label style="font-size: 15px;" class="pt-2">โปรดใส่วันที่โอน: </label>
           <div class="form-group">
             <my-date-picker [placeholder]="placeholder" [options]="myDatePickerOptions"
                           (dateChanged)="onDateChanged($event)" required>
@@ -100,7 +101,7 @@
       </div>
       <div class="card-body">
         <p><span class="font-weight-bold" *ngIf="order.code">Code:</span> {{order.code}}</p>
-        <p><span class="font-weight-bold">วันที่ (วัน-เดือน-ปี):</span> {{getDate(order.date)}}</p>
+        <p><span class="font-weight-bold">วันที่โอน (วัน-เดือน-ปี):</span> {{getDate(order.date)}}</p>
         <p><span class="font-weight-bold">รหัสคอร์ส:</span> {{order.courseCode}}</p>
         <p><span class="font-weight-bold">ราคา:</span> {{order.price}} บาท</p>
         <p><span class="font-weight-bold">เคลม: <i class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i></span>

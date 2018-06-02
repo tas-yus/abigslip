@@ -107,8 +107,11 @@ router.get('/api/books/courses/:id', (req, res) => {
 });
 
 router.get('/api/books/:id', (req, res) => {
+  var daysInMonth = function (month, year) {
+      return new Date(year, month, 0).getDate();
+  }
   var from = new Date(req.query.year, req.query.month, 1);
-  var to = new Date(req.query.year, req.query.month, 31);
+  var to = new Date(req.query.year, req.query.month, daysInMonth(Number(req.query.month)+1, req.query.year) + 1);
   var matchObject = {
     updatedAt: {
         $gte: from,
@@ -116,7 +119,7 @@ router.get('/api/books/:id', (req, res) => {
     },
     void: false
   };
-  if (req.query.branch) {
+  if (req.query.branch != 0) {
     matchObject.branch = req.query.branch;
   }
   Book.findById(req.params.id).select("title _id numBook orders updatedAt")
