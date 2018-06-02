@@ -31,7 +31,7 @@ router.post('/login', (req, res) => {
     if (!bcrypt.compareSync(req.body.password, user.password)) {
       return res.status(401).send({message: "username หรือ รหัสผ่านผิด"});
     }
-    var token = jwt.sign({user}, 'secret', {expiresIn: 7200});
+    var token = jwt.sign({user}, 'secret', {expiresIn: 3600*6});
     res.status(200).send({message: 'ลงชื่อเข้าใจสำเร็จ', token, userId: user._id});
   });
 })
