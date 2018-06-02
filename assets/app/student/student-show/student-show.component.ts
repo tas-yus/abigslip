@@ -241,7 +241,7 @@ export class StudentShowComponent implements OnInit {
   }
 
   check(book) {
-    var books = this.selectedBooks.filter((o) => { return o._id.toString() == book });
+    var books = this.selectedBooks.filter((o) => { return o._id == book });
     return !!books[0];
   }
 }

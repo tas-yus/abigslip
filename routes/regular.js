@@ -109,7 +109,7 @@ router.post('/api/students/:id/courses', (req, res) => {
                   console.log(err);
                   return res.status(400).send({message: "something's wrong"});
                 }
-                res.status(200).send({message: "course added to student", id: student._id});
+                res.status(200).send({message: "course added to student", id: student._id, orderId: order._id});
               });
             });
           });
