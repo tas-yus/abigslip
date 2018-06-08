@@ -40,6 +40,7 @@
         <td>รหัสคอร์ส</td>
         <td>ราคาคอร์ส</td>
         <td>วันที่โอน</td>
+        <td>สาขา</td>
         <td>match กับระบบ</td>
         <td>เวลาอัพเดทล่าสุด</td>
       </tr>
@@ -51,6 +52,7 @@
       <td>{{order.courseCode? order.courseCode: '-'}}</td>
       <td>{{order.price}}</td>
       <td>{{updateDate(order.date)}}</td>
+      <td>{{branchArray[order.branch]}}</td>
       <td>
         <i class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i>
       </td>

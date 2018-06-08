@@ -12,9 +12,9 @@
       <label><i class="fa fa-bolt CS"></i> = เด็กใหม่ | </label>
       <select (change)="selectFilter($event)" id="">
         <option value="">เลือกจำนวนผลลัพธ์</option>
-        <option value="100">100</option>
-        <option value="200">200</option>
-        <option value="300">300</option>
+        <option value="500">500</option>
+        <option value="1000">1000</option>
+        <option value="2000">2000</option>
       </select>
     </div>
   </div>
@@ -30,6 +30,7 @@
         <td>รหัสสลิป</td>
         <td>รหัสคอร์ส</td>
         <td>ราคาคอร์ส</td>
+        <td>สาขา</td>
         <td>match กับระบบ</td>
         <td>เวลาอัพเดทล่าสุด</td>
       </tr>
@@ -42,6 +43,7 @@
         <td>{{student.lastOrder.code? student.lastOrder.code:'-'}}</td>
         <td>{{student.lastOrder.courseCode? student.lastOrder.courseCode: '-'}}</td>
         <td>{{student.lastOrder.price}}</td>
+        <td>{{branchArray[student.lastOrder.branch]}}</td>
         <td>
           <i class="fa {{student.lastOrder.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i>
         </td>
@@ -50,6 +52,7 @@
         </td>
       </ng-template>
       <ng-template [ngIf]="!student.lastOrder">
+        <td>-</td>
         <td>-</td>
         <td>-</td>
         <td>-</td>

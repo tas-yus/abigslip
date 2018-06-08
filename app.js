@@ -190,7 +190,7 @@ function seedDB() {
     {
       title: 'มิดไมล์',
       code: 13,
-      numBook: 3,
+      numBook: 1,
       bookCodes: [46, 47, 48]
     },
     {
@@ -301,12 +301,19 @@ function seedDB() {
       numBook: 1,
       bookCodes: [15,16,17,18,19,20,22,23,24,25,26,27,28,29,30,38,39,40,41,42,43],
     },
-    // {
-    //   title: 'TCAS',
-    //   code: 33,
-    //   numBook: 10,
-    //   bookCodes: [33,34,36,37,38,39,40,41,42,43],
-    // },
+    {
+      title: 'TCAS',
+      code: 33,
+      numBook: 10,
+      bookCodes: [33,34,36,37,38,39,40,41,42,43],
+    },
+    {
+      title: 'TCAS (เลือกได้ตามจำนวน)',
+      code: 34,
+      numBook: 10,
+      bookCodes: [33,34,36,37,38,39,40,41,42,43],
+      strict: false
+    },
   ];
 
   var groups = [
@@ -648,55 +655,55 @@ function seedDB() {
       title: 'โปรฯ เคมี TCAS',
       price: 7500,
       code: 'BG7500',
-      courseCodes: []
+      courseCodes: [33]
     },
     {
       title: 'ส่วนต่าง TCAS 500',
       price: 500,
       code: 'TC500',
-      courseCodes: []
+      courseCodes: [34]
     },
     {
       title: 'ส่วนต่าง TCAS 1000',
       price: 1000,
       code: 'TC1000',
-      courseCodes: []
+      courseCodes: [34]
     },
     {
       title: 'ส่วนต่าง TCAS 4000',
       price: 4000,
       code: 'TC4000',
-      courseCodes: []
+      courseCodes: [34]
     },
     {
       title: 'ส่วนต่าง TCAS 5000',
       price: 5000,
       code: 'TC5000',
-      courseCodes: []
+      courseCodes: [34]
     },
     {
       title: 'ส่วนต่าง TCAS 2000',
       price: 2000,
       code: 'TC2000',
-      courseCodes: []
+      courseCodes: [34]
     },
     {
       title: 'ส่วนต่าง TCAS 4700',
       price: 4700,
       code: 'TC4700',
-      courseCodes: []
+      courseCodes: [34]
     },
     {
       title: 'ส่วนต่าง TCAS 2500',
       price: 2500,
       code: 'TC2500',
-      courseCodes: []
+      courseCodes: [34]
     },
     {
       title: 'ส่วนต่าง TCAS 1900',
       price: 1900,
       code: 'TC1900',
-      courseCodes: []
+      courseCodes: [34]
     },
     {
       title: 'Junior 1 (สด) 2561',

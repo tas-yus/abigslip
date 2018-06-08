@@ -13,10 +13,18 @@ export class StudentListComponent implements OnInit {
   students = [];
   success = null;
   types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
-  limit = 100;
+  limit = 500;
   count = null;
   loading = false;
   search = false;
+  branchArray: any = [
+    "Admin",
+    "BG", "BW", "BB",
+    "BC", "BS", "BP",
+    "BNG", "BR", "BH",
+    "BU", "BPK", "BN",
+    "BA", "BQ"
+  ];
 
   constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, public authService: AuthService) {}
 

@@ -23,6 +23,14 @@ export class OrderListComponent implements OnInit {
   year = new Date().getFullYear();
   months = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม'
   , 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+  branchArray: any = [
+    "Admin",
+    "BG", "BW", "BB",
+    "BC", "BS", "BP",
+    "BNG", "BR", "BH",
+    "BU", "BPK", "BN",
+    "BA", "BQ"
+  ];
 
   @ViewChild('selectMode') selectMode;
 
