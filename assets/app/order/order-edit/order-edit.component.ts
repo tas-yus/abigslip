@@ -41,7 +41,7 @@ export class OrderEditComponent implements OnInit {
 
   requestOrder(id) {
     this.http.get<any>(`/api/orders/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
-      if (data.claimed || data.createdByServer || data.void) {
+      if (data.claimed && data.type != 5 || data.createdByServer || data.void) {
         this.canEdit = false;
       }
       this.order = data;
