@@ -129,6 +129,7 @@
         <p><span class="font-weight-bold">ราคา:</span> {{order.price}} บาท</p>
         <p><span class="font-weight-bold">เคลม: <i class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i></span>
         <hr>
+        <p><span class="font-weight-bold">สาขา: </span> {{branchArray[order.branch]}}</p>
         <p><span class="font-weight-bold">คอร์ส: </span> {{order.course.title}}</p>
         <p>
           <span class="font-weight-bold">หนังสือที่ออก:</span>
