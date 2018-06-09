@@ -205,10 +205,39 @@ router.get('/api/students/:id', (req, res) => {
     if (!student) {
       return res.status(400).send({message: "no student found"});
     }
-    res.status(200).send(student);
+    Book.populate(student, {path:"orders.books", select:"title", model: "Book"}, (err, student) => {
+      if (err) {
+        console.log(err);
+      }
+      Course.populate(student, {path: "orders.course", select: "title", model: "Course"}, (err, course) => {
+        if (err) {
+          console.log(err);
+        }
+        res.status(200).send(student);
+      });
+    });
   }).catch((err) => {
     console.log(err);
     res.status(400).send({message: "something's wrong"});
+  });
+});
+
+router.delete('/api/students/:id', (req, res) => {
+  Student.findById(req.params.id).populate({path: "orders", select: "void", match: {void: false}}).exec((err, student) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).send({message: "something's wrong"});
+    }
+    if (student.orders.length != 0) {
+      return res.status(400).send({message: "ลบเด็กไม่ได้เพราะมีรายการสลิป"});
+    }
+    Student.findByIdAndDelete(req.params.id, (err, student) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).send({message: "something's wrong"});
+      }
+      res.status(200).send({});
+    });
   });
 });
 

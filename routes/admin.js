@@ -52,7 +52,7 @@ router.get('/api/orders', allowAdmin, (req, res) => {
   } else if (type == 6) {
     queryObject.void = true;
   }
-  Order.find(queryObject).populate("claimedBy").sort({date: 1}).limit(limit).exec((err, orders) => {
+  Order.find(queryObject).populate("claimedBy").sort({updatedAt: -1}).limit(limit).exec((err, orders) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});
     }
@@ -82,7 +82,7 @@ router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
       price: req.body.price
     };
   }
-  Order.findOne(queryObject).then((order) => {
+  Order.findOne({queryObject}).then((order) => {
     if (!order) {
       return res.status(400).send({message: "ยังไม่เคยมีสลิปนี้ในระบบ"});
     }
@@ -235,7 +235,7 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
               console.log(err);
               return res.status(400).send({message: "something's wrong"});
             }
-            orders = orders.filter((o) => {return !claimedOrders.includes(o._id.toString()) });
+            orders = orders.filter((o) => {return !claimedOrders.includes(o._id.toString()) && !o.void });
             var order = orders[0];
             if (order && order.createdByServer === true) {
               count++;
@@ -252,7 +252,7 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
               return;
             }
             countAdded++;
-            if (order  && !order.void && !claimedOrders.includes(order._id.toString())) {
+            if (order && !claimedOrders.includes(order._id.toString())) {
               claimedOrders.push(order._id.toString());
               countMatched++;
               Student.findByIdAndUpdate(order.claimedBy, {lastOrder: order._id}, (err) => {
@@ -478,5 +478,21 @@ router.post("/api/excel", allowAdmin, (req, res) => {
       });
     });
 });
+
+router.put('/api/students/:id', (req, res) => {
+  Student.findByIdAndUpdate(req.params.id, {firstname: req.body.firstname, lastname: req.body.lastname}, {new: true}, (err, student) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).send({err, message: "Something went wrong"});
+    }
+    res.status(200).send(student);
+  });
+});
+
+// router.delete('/api/orders/:id', (req, res) => {
+//   Order.findByIdAndDelete(req.params.id, (err) => {
+//     res.status(200).send({});
+//   });
+// });
 
 module.exports = router;

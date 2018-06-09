@@ -4,6 +4,7 @@
     <div class="d-flex justify-content-between">
       <p class="{{types[order.type-1]}}"><span class="font-weight-bold">Code {{types[order.type-1]}}:</span> {{order.code}} <i class="fa fa-tag" *ngIf="!order.createdByServer"></i> {{order.void? '(เสีย)' : ''}}</p>
       <p data-toggle="modal" data-target="#exampleModal"><i *ngIf="canEdit" class="fa fa-ban"></i></p>
+      <!-- <p (click)="onDelete()">DeleteSlip</p> -->
     </div>
     <p *ngIf="order.claimedBy"><span class="font-weight-bold">ชื่อ-สกุล: </span><a routerLink="/students/{{order.claimedBy._id}}">{{order.claimedBy.firstname}} {{order.claimedBy.lastname}}</a></p>
     <p><span class="font-weight-bold">วันที่ (วัน-เดือน-ปี):</span> {{getDate(order.date)}}</p>

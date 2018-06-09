@@ -5,6 +5,8 @@ import { NgForm } from '@angular/forms';
 import { AuthService } from '../../auth.service';
 import { IMyDpOptions} from 'mydatepicker';
 
+declare var $:any;
+
 @Component({
     selector: 'student-show',
     templateUrl: './student-show.component.html',
@@ -27,6 +29,8 @@ export class StudentShowComponent implements OnInit {
   free = false;
   errMessage = null;
   successMessage = null;
+  canEdit = false;
+  ngStudent = null;
   @ViewChild('selectMode') selectMode;
 
   public myDatePickerOptions: IMyDpOptions = {
@@ -41,6 +45,10 @@ export class StudentShowComponent implements OnInit {
     const id = this.route.snapshot.params['id'];
     this.http.get<any[]>(`/api/students/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
       this.student = data;
+      this.ngStudent = {
+        firstname: this.student.firstname,
+        lastname: this.student.lastname
+      }
     }, (err) => {
       this.router.navigate(['/home']);
     });
@@ -243,5 +251,36 @@ export class StudentShowComponent implements OnInit {
   check(book) {
     var books = this.selectedBooks.filter((o) => { return o._id == book });
     return !!books[0];
+  }
+
+  onDeleteStudent() {
+    const id = this.route.snapshot.params['id'];
+    this.http.delete<any>(`/api/students/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
+      $('#exampleModal').modal('hide');
+      this.router.navigate(['/home']);
+    }, (err) => {
+      this.errMessage = err.error.message;
+      setTimeout(() => {
+        this.errMessage = null;
+      }, 3000);
+    });
+  }
+
+  onEditStudent() {
+    const id = this.route.snapshot.params['id'];
+    this.http.put<any>(`/api/students/${id}?token=${this.authService.getToken()}`, this.ngStudent).subscribe((data) => {
+      this.student.firstname = data.firstname;
+      this.student.lastname = data.lastname;
+      this.canEdit = false;
+      this.successMessage = "แก้ไขเด็กสำเร็จ โปรดตรวจเช็ค";
+      setTimeout(() => {
+        this.successMessage = null;
+      }, 3000);
+    }, (err) => {
+      this.errMessage = err.error.message;
+      setTimeout(() => {
+        this.errMessage = null;
+      }, 3000);
+    });
   }
 }

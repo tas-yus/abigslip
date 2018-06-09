@@ -105,4 +105,11 @@ export class OrderEditComponent implements OnInit {
       this.router.navigate(['/home']);
     });
   }
+
+  // onDelete() {
+  //   const id = this.route.snapshot.params['id'];
+  //   this.http.delete<any>(`/api/orders/${id}?token=${this.authService.getToken()}`).subscribe(data => {
+  //     console.log("deleted");
+  //   });
+  // }
 }
