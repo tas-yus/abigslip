@@ -199,8 +199,11 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
       }
       var count = 1;
       worksheet.eachRow({ includeEmpty: true }, function(row, rowNumber) {
+        if (worksheet.actualRowCount == 1) {
+          return callback();
+        }
         if (!row.values[1]) {
-          count++;;
+          count++;
           return;
         }
         if (rowNumber == 1 && (row.values[1] != "Confirm Code" || row.values[2] != "โทรศัพท์" || row.values[3] != "ค่าเรียน"
@@ -249,7 +252,7 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
               return;
             }
             countAdded++;
-            if (order && !claimedOrders.includes(order._id.toString()) && !order.void) {
+            if (order  && !order.void && !claimedOrders.includes(order._id.toString())) {
               claimedOrders.push(order._id.toString());
               countMatched++;
               Student.findByIdAndUpdate(order.claimedBy, {lastOrder: order._id}, (err) => {
