@@ -14,7 +14,7 @@ export class OrderListComponent implements OnInit {
   loading = false;
   search = false;
   types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE', 'เสีย'];
-  typeOptions = ['All', 'KTB', 'GSB', 'CS', 'KTC', 'FREE', 'เสีย'];
+  typeOptions = ['All', 'KTB', 'GSB', 'CS', 'KTC', 'FREE', 'ไม่ match', 'เสีย'];
   errorMessage1 = null;
   count = null;
   type = 0;

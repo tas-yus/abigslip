@@ -25,6 +25,14 @@ export class OrderEditComponent implements OnInit {
   errorMessage1 = null;
   loading = false;
   types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
+  branchArray: any = [
+    "Admin",
+    "BG", "BW", "BB",
+    "BC", "BS", "BP",
+    "BNG", "BR", "BH",
+    "BU", "BPK", "BN",
+    "BA", "BQ"
+  ];
 
   @ViewChild('selectMode') selectMode;
 
@@ -45,6 +53,7 @@ export class OrderEditComponent implements OnInit {
         this.canEdit = false;
       }
       this.order = data;
+      console.log(this.order);
       this.ngOrder = {
         code: data.code,
         courseCode: data.courseCode,

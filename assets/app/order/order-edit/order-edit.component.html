@@ -10,6 +10,7 @@
     <p><span class="font-weight-bold">วันที่ (วัน-เดือน-ปี):</span> {{getDate(order.date)}}</p>
     <p><span class="font-weight-bold">รหัสคอร์ส:</span> {{order.courseCode}}</p>
     <p><span class="font-weight-bold">ราคา:</span> {{order.price}}</p>
+    <p><span class="font-weight-bold">สาขา: </span> {{branchArray[order.branch]}}</p>
     <p><span class="font-weight-bold">เคลม:</span>
       <i class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i>
     </p>

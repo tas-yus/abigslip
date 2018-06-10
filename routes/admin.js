@@ -47,12 +47,14 @@ router.get('/api/orders', allowAdmin, (req, res) => {
     },
     void: false
   };
-  if (type != 0 && type != 6) {
-    queryObject.type = type;
-  } else if (type == 6) {
+  if (type == 7) {
     queryObject.void = true;
+  } else if (type == 6) {
+    queryObject.claimed = false;
+  } else if (type != 0) {
+    queryObject.type = type;
   }
-  Order.find(queryObject).populate("claimedBy").sort({updatedAt: -1}).limit(limit).exec((err, orders) => {
+  Order.find(queryObject).populate("claimedBy").sort({date: -1}).limit(limit).exec((err, orders) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});
     }
@@ -82,6 +84,7 @@ router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
       price: req.body.price
     };
   }
+  console.log(queryObject);
   Order.findOne({queryObject}).then((order) => {
     if (!order) {
       return res.status(400).send({message: "ยังไม่เคยมีสลิปนี้ในระบบ"});
@@ -397,18 +400,28 @@ router.post("/api/excel", allowAdmin, (req, res) => {
   var queryObject;
   if (type == 1) {
     queryObject = {
-      $or:[{
-        date: {
-            $gte: from,
-            $lt: to
+      $or:[
+        {
+          date: {
+              $gte: from,
+              $lt: to
+          }
+        },
+        {
+          $and: [
+            {
+              claimedAt: {
+                $gte: from,
+                $lt: to
+              },
+              date: {
+                  $lte: from-1,
+              },
+              claimed: true
+            }
+          ]
         }
-      },
-      {
-        claimedAt: {
-          $gte: from,
-          $lt: to
-        }
-      }],
+      ],
       price: {
         $gte: 1
       }

@@ -378,6 +378,12 @@ function seedDB() {
       courseCodes: [12]
     },
     {
+      title: 'Promotion Sci 3A,3B',
+      price: 6500,
+      code: 'AB6500',
+      courseCodes: [12]
+    },
+    {
       title: 'Gold Card ลด 500',
       price: 3000,
       code: 'GC3000',

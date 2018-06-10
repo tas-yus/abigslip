@@ -130,10 +130,13 @@
         <p><span class="font-weight-bold">เคลม: <i class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i></span>
         <hr>
         <p><span class="font-weight-bold">สาขา: </span> {{branchArray[order.branch]}}</p>
-        <p><span class="font-weight-bold">คอร์ส: </span> {{order.course.title}}</p>
-        <p>
+        <p *ngIf="order.course"><span class="font-weight-bold">คอร์ส: </span> {{order.course.title}}</p>
+        <p *ngIf="order.course">
           <span class="font-weight-bold">หนังสือที่ออก:</span>
           <li *ngFor="let book of order.books">{{book.title}}</li>
+        </p>
+        <p *ngIf="!order.course">
+          <span class="font-weight-bold">หนังสือที่ออก:</span> ไม่มี
         </p>
       </div>
     </div>
