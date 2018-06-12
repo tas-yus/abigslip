@@ -49,3 +49,13 @@ a {
   -webkit-transition: all 0.5s; /* Safari */
    transition: all 0.5s;
 }
+
+.claimed {
+  cursor: pointer;
+}
+
+.claimed:hover {
+  text-shadow: 0.5px 0.5px 0.5px black;
+  -webkit-transition: all 0.5s; /* Safari */
+   transition: all 0.5s;
+}

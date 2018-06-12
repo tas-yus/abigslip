@@ -12,8 +12,11 @@
     <p><span class="font-weight-bold">ราคา:</span> {{order.price}}</p>
     <p><span class="font-weight-bold">สาขา: </span> {{branchArray[order.branch]}}</p>
     <p><span class="font-weight-bold">เคลม:</span>
-      <i class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}}"></i>
+      <i (click)="claim(order.type, order.createdByServer)" class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}} {{order.type == 4 && !order.createdByServer? 'claimed': ''}}"></i>
     </p>
+    <span class="invalid-feedback" *ngIf="errorMessage2">
+      *{{errorMessage2}}
+    </span>
     <div *ngIf="canEdit">
       <div class="text-right">
         <button class="btn btn-primary" (click)="showEdit = !showEdit">{{!showEdit? 'Edit':'Hide'}}</button>

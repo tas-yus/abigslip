@@ -19,8 +19,8 @@ export class OrderListComponent implements OnInit {
   count = null;
   type = 0;
   limit = 100;
-  month = new Date().getMonth();
-  year = new Date().getFullYear();
+  month:any = new Date().getMonth();
+  year:any = new Date().getFullYear();
   months = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม'
   , 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
   branchArray: any = [
@@ -37,11 +37,18 @@ export class OrderListComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, public authService: AuthService) {}
 
   ngOnInit() {
+    var month = Number(this.route.snapshot.queryParamMap.get('month'));
+    var year = Number(this.route.snapshot.queryParamMap.get('year'));
+    var type = Number(this.route.snapshot.queryParamMap.get('type'));
+    month && month >= 0 && month <= 11? this.month = month: '';
+    year && year >= this.year - 4 && year <= this.year? this.year = year: '';
+    type && type >= 0 && type <= 7? this.type = type: '';
     this.getOrders();
   }
 
   getOrders() {
     this.loading = true;
+    this.router.navigate(['/orders'], {queryParams: {month: this.month, year: this.year, type: this.type}});
     this.http.get<any>(`/api/orders?token=${this.authService.getToken()}&&limit=${this.limit}&&month=${this.month}&&year=${this.year}&&type=${this.type}`).subscribe((data) => {
       this.orders = data.orders;
       this.count = data.count;
@@ -83,5 +90,21 @@ export class OrderListComponent implements OnInit {
 
   getYear(offset) {
     return (new Date().getFullYear())-Number(offset);
+  }
+
+  claim(type, id, createdByServer) {
+    if (type != 4 || createdByServer) return;
+    this.loading = true;
+    this.http.put<any>(`/api/orders/${id}/claim?token=${this.authService.getToken()}`, {}).subscribe((data) => {
+      this.orders = this.orders.map((o) => {
+        if (o._id == id) {
+          o.claimed = !o.claimed;
+        }
+        return o;
+      });
+      this.loading = false;
+    }, (err) => {
+      console.log(err);
+    });
   }
 }

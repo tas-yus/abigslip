@@ -84,7 +84,6 @@ router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
       price: req.body.price
     };
   }
-  console.log(queryObject);
   Order.findOne({queryObject}).then((order) => {
     if (!order) {
       return res.status(400).send({message: "ยังไม่เคยมีสลิปนี้ในระบบ"});
@@ -136,7 +135,7 @@ router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
           });
         });
       });
-    })
+    });
   }).catch((err) => {
     console.log(err);
     res.status(400).send({message: "something's wrong"});
@@ -340,6 +339,24 @@ router.put("/api/orders/:id/void", allowAdmin, (req, res) => {
       return res.status(400).send({err, message: "Something went wrong"});
     }
     return res.status(200).send({});
+  });
+});
+
+router.put("/api/orders/:id/claim", allowAdmin, (req, res) => {
+  Order.findById(req.params.id, (err, order) => {
+    if (err) {
+      return res.status(400).send({message: "something's wrong"});
+    }
+    if (order.type != 4 || order.createdByServer) {
+      return res.status(400).send({message: "ไม่สามารถเคลมได้"});
+    }
+    order.claimed = !order.claimed;
+    order.save((err) => {
+      if (err) {
+        return res.status(400).send({message: "something's wrong"});
+      }
+      res.status(200).send({});
+    });
   });
 });
 

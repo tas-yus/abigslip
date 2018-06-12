@@ -23,6 +23,7 @@ export class OrderEditComponent implements OnInit {
   successMessage = null;
   canEdit = true;
   errorMessage1 = null;
+  errorMessage2 = null;
   loading = false;
   types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
   branchArray: any = [
@@ -53,7 +54,6 @@ export class OrderEditComponent implements OnInit {
         this.canEdit = false;
       }
       this.order = data;
-      console.log(this.order);
       this.ngOrder = {
         code: data.code,
         courseCode: data.courseCode,
@@ -115,6 +115,18 @@ export class OrderEditComponent implements OnInit {
     });
   }
 
+  claim(type, createdByServer) {
+    if (type != 4 || createdByServer) return;
+    const id = this.route.snapshot.params['id'];
+    this.http.put<any>(`/api/orders/${id}/claim?token=${this.authService.getToken()}`, {}).subscribe((data) => {
+      this.requestOrder(id);
+    }, (err) => {
+      this.errorMessage2 = err.error.message;
+      setTimeout(() => {
+        this.errorMessage2 = null;
+      }, 3000);
+    });
+  }
   // onDelete() {
   //   const id = this.route.snapshot.params['id'];
   //   this.http.delete<any>(`/api/orders/${id}?token=${this.authService.getToken()}`).subscribe(data => {
