@@ -96,7 +96,7 @@ export class OrderListComponent implements OnInit {
     if (type != 4 || createdByServer) return;
     this.loading = true;
     this.http.put<any>(`/api/orders/${id}/claim?token=${this.authService.getToken()}`, {}).subscribe((data) => {
-      this.orders = this.orders.map((o) => {
+      this.orders.map((o) => {
         if (o._id == id) {
           o.claimed = !o.claimed;
         }

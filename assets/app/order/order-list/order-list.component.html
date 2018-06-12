@@ -54,7 +54,7 @@
       <td>{{updateDate(order.date)}}</td>
       <td>{{branchArray[order.branch]}}</td>
       <td>
-        <i [hidden]="loading" (click)="claim(order.type, order._id, order.createdByServer)" class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}} {{order.type == 4 && !order.createdByServer? 'claimed': ''}}"></i>
+        <i (click)="claim(order.type, order._id, order.createdByServer)" class="fa {{order.claimed? 'fa-check text-success':'fa-times text-danger'}} {{order.type == 4 && !order.createdByServer? 'claimed': ''}}"></i>
       </td>
       <td>
         {{order.claimed? getDate(order.claimedAt): getDate(order.updatedAt)}}
