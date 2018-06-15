@@ -19,6 +19,9 @@
     </span>
     <div *ngIf="canEdit">
       <div class="text-right">
+        <!-- <button class="btn btn-info" ngxClipboard [cbContent]="order._id">
+          Copy
+        </button> -->
         <button class="btn btn-primary" (click)="showEdit = !showEdit">{{!showEdit? 'Edit':'Hide'}}</button>
       </div>
 

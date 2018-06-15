@@ -84,6 +84,7 @@ router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
       price: req.body.price
     };
   }
+  console.log(queryObject);
   Order.findOne({queryObject}).then((order) => {
     if (!order) {
       return res.status(400).send({message: "ยังไม่เคยมีสลิปนี้ในระบบ"});

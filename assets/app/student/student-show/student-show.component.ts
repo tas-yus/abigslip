@@ -31,6 +31,7 @@ export class StudentShowComponent implements OnInit {
   successMessage = null;
   canEdit = false;
   ngStudent = null;
+  prepopulate = false;
   branchArray: any = [
     "Admin",
     "BG", "BW", "BB",
@@ -39,7 +40,7 @@ export class StudentShowComponent implements OnInit {
     "BU", "BPK", "BN",
     "BA", "BQ"
   ];
-  
+
   @ViewChild('selectMode') selectMode;
 
   public myDatePickerOptions: IMyDpOptions = {

@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ClipboardModule } from 'ngx-clipboard';
 
 import { AppComponent } from "./app.component";
 import { HomeComponent } from "./home/home.component";
@@ -57,7 +58,7 @@ import { SettingGuard } from './setting-guard.service';
         SettingGroupEditComponent
     ],
     imports: [BrowserModule, AppRoutingModule, FormsModule,
-      HttpClientModule, MyDatePickerModule],
+      HttpClientModule, MyDatePickerModule, ClipboardModule],
     providers: [AuthService, AuthGuard, AdminGuard, SettingGuard],
     bootstrap: [AppComponent]
 })

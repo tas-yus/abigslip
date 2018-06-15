@@ -28,9 +28,22 @@
 
   <div class="form my-2">
     <h6 class="font-weight-bold">เพิ่มรายการโอน</h6>
-    <form #f="ngForm">
-      <div [hidden]="loading">
+    <!-- <div class="d-flex justify-content-between">
+      <div>
+        <p class="text-primary" style="cursor:pointer" (click)="prepopulate = !prepopulate">เพิ่มจาก slip เก่า<p>
+      </div>
 
+    </div>
+    <form #f2="ngForm" *ngIf="prepopulate">
+      <div class="form-group">
+        <input class="form-control" placeholder="id ของ slip เก่า" required #id="ngModel" ngModel type="text" name="id" autocomplete="off">
+      </div>
+      <div class="form-group text-right">
+        <button (click)="onCopySlip(f2); f2.reset()" [disabled]="!f2.form.valid" class="btn btn-primary">Add</button>
+      </div>
+    </form> -->
+    <form #f="ngForm" *ngIf="!prepopulate">
+      <div [hidden]="loading">
         <div class="form-group">
           <select (change)="updateForm($event)" #selectMode class="form-control" id="">
             <option value="">เลือกรูปแบบการชำระเงิน</option>
