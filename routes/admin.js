@@ -85,6 +85,8 @@ router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
     };
   }
   console.log(queryObject);
+  console.log(queryObject.date);
+  console.log(typeof queryObject.date);
   Order.findOne({queryObject}).then((order) => {
     if (!order) {
       return res.status(400).send({message: "ยังไม่เคยมีสลิปนี้ในระบบ"});
