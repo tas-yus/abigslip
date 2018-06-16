@@ -25,6 +25,10 @@ export class OrderEditComponent implements OnInit {
   errorMessage1 = null;
   errorMessage2 = null;
   loading = false;
+  course = 0;
+  courses = [];
+  books = [];
+  selectedBooks = [];
   types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
   branchArray: any = [
     "Admin",
@@ -34,6 +38,7 @@ export class OrderEditComponent implements OnInit {
     "BU", "BPK", "BN",
     "BA", "BQ"
   ];
+  showEdit2 = false;
 
   @ViewChild('selectMode') selectMode;
 
@@ -124,6 +129,81 @@ export class OrderEditComponent implements OnInit {
       this.errorMessage2 = err.error.message;
       setTimeout(() => {
         this.errorMessage2 = null;
+      }, 3000);
+    });
+  }
+
+  getCourse(id) {
+    var results = this.courses.filter((o) => { return  o._id == id});
+    return results? results[0]: null;
+  }
+
+  onSelectCourse() {
+    this.selectedBooks = [];
+    this.books = [];
+    if (this.course != 0) {
+      this.requestBooks(this.course);
+    }
+  }
+
+  onSelectBooks(e) {
+    if (e.srcElement.checked) {
+      this.selectedBooks.push(e.srcElement.value);
+    } else {
+      this.selectedBooks = this.selectedBooks.filter((o) => { return o !== e.srcElement.value });
+    }
+  }
+
+  requestBooks(id) {
+    this.http.get<any[]>(`/api/courses/${id}/books?token=${this.authService.getToken()}`).subscribe((data) => {
+      this.books = data;
+      if (this.books.length == this.getCourse(id).numBook && this.getCourse(id).strict) {
+        this.selectedBooks = this.books;
+      }
+    }, (err) => {
+      console.log(err);
+    });
+  }
+
+  requestCourses(courseCode) {
+    this.http.get<any[]>(`/api/courseCode/${courseCode}/courses?token=${this.authService.getToken()}`).subscribe((data) => {
+      this.courses = data;
+      if (this.courses.length == 0) {
+        this.course = null;
+        this.books = [];
+      }
+    }, (err) => {
+      console.log(err);
+    });
+  }
+
+  check(book) {
+    var books = this.selectedBooks.filter((o) => { return o._id == book });
+    return !!books[0];
+  }
+
+  canAdd() {
+    if (this.course == 0) return false;
+    if (this.getCourse(this.course).strict && this.selectedBooks.length !== this.getCourse(this.course).numBook) return false;
+    if (this.selectedBooks.length > this.getCourse(this.course).numBook) return false;
+    return true;
+  }
+
+  onEditBook() {
+    const id = this.route.snapshot.params['id'];
+    var books = this.selectedBooks;
+    var course = this.course;
+    var body = {
+      books, course
+    };
+    this.http.put<any>(`/api/orders/${id}/books?token=${this.authService.getToken()}`, body)
+    .subscribe((data) => {
+      this.requestOrder(id);
+      this.showEdit2 = false;
+    }, (err) => {
+      this.errorMessage1 = err.error.message;
+      setTimeout(() => {
+        this.errorMessage1 = null;
       }, 3000);
     });
   }

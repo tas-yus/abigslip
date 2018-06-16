@@ -87,6 +87,15 @@ router.get('/api/groups/:id/courses', (req, res) => {
   });
 });
 
+router.get('/api/courseCode/:courseCode/courses', (req, res) => {
+  Group.findOne({code: req.params.courseCode}).populate({path: "courses", options: {sort: {numUse: -1}}}).exec((err, group) => {
+    if (err) {
+      return res.status(400).send({message: "something's wrong "});
+    }
+    res.status(200).send(group.courses);
+  });
+});
+
 
 router.get('/api/courses/:id/books', (req, res) => {
   Course.findById(req.params.id).populate({path: "books", options: {sort: {title: 1}}}).exec((err, course) => {

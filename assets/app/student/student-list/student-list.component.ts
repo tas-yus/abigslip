@@ -13,10 +13,11 @@ export class StudentListComponent implements OnInit {
   students = [];
   success = null;
   types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
-  limit = 500;
+  limit = 100;
   count = null;
   loading = false;
   search = false;
+  branch = this.authService.isAdmin()? 0: this.authService.getBranch();
   branchArray: any = [
     "Admin",
     "BG", "BW", "BB",
@@ -38,8 +39,8 @@ export class StudentListComponent implements OnInit {
   }
 
   getStudents() {
-    this.loading = true;;
-    this.http.get<any>(`/api/students?token=${this.authService.getToken()}&&limit=${this.limit}`).subscribe((data) => {
+    this.loading = true;
+    this.http.get<any>(`/api/students?token=${this.authService.getToken()}&&limit=${this.limit}&&branch=${this.branch}`).subscribe((data) => {
       this.students = data.students;
       this.count = data.count;
       this.loading = false;

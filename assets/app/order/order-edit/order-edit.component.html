@@ -76,6 +76,34 @@
         <li *ngFor="let book of order.books">{{book.title}}</li>
         <li *ngIf="order.books.length === 0">คอร์สนี้ไม่มีหนังสือ</li>
       </p>
+
+      <div class="text-right">
+        <!-- <button class="btn btn-info" ngxClipboard [cbContent]="order._id">
+          Copy
+        </button> -->
+        <button class="btn btn-primary" (click)="showEdit2 = !showEdit2; requestCourses(order.courseCode)">{{!showEdit2? 'Edit':'Hide'}}</button>
+      </div>
+      <div *ngIf="showEdit2">
+        <p>แก้ไขข้อมูลหนังสือ</p>
+        <div class="form-group">
+          <select name="course" (change)="onSelectCourse()" *ngIf="courses.length !== 0" [(ngModel)]="course" class="form-control">
+            <option value="0">เลือกคอร์ส</option>
+            <option *ngFor="let course of courses" value="{{course._id}}">{{course.title}}</option>
+          </select>
+        </div>
+        <div class="form-group" *ngIf="type && group != 0 && course != 0 && books.length >= 1 && getCourse(course)">
+          <p>โปรดเลือกหนังสือ {{getCourse(course).numBook}} รายการ {{getCourse(course).strict? '':'หรือน้อยกว่า (ขึ้นกับคอร์สเรียนที่น้องสมัคร)'}}</p>
+          <div *ngFor="let book of books">
+            <input (change)="onSelectBooks($event)" type="checkbox" [checked]="getCourse(course).strict && check(book._id)" value="{{book._id}}"
+            [disabled]="selectedBooks.length >= getCourse(course).numBook">
+            {{book.title}}
+          </div>
+        </div>
+
+        <div class="form-group text-right">
+            <button (click)="onEditBook(f)" [disabled]="!canAdd()" class="btn btn-primary">Edit</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

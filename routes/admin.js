@@ -519,6 +519,24 @@ router.put('/api/students/:id', (req, res) => {
   });
 });
 
+router.put('/api/orders/:id/books', (req, res) => {
+  Order.findById(req.params.id, (err, order) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).send({err, message: "Something went wrong"});
+    }
+    order.books = req.body.books;
+    order.course = req.body.course;
+    order.save((err) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).send({err, message: "Something went wrong"});
+      }
+      return res.status(200).send();
+    })
+  });
+})
+
 // router.delete('/api/orders/:id', (req, res) => {
 //   Order.findByIdAndDelete(req.params.id, (err) => {
 //     res.status(200).send({});

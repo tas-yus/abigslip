@@ -22,6 +22,7 @@ router.use('/api/', (req, res, next) => {
     if (err) {
       return res.status(401).send({message: "Unauthorized"});
     }
+    req.user = decoded.user;
     next();
   });
 });
@@ -185,12 +186,25 @@ router.get("/api/students/search", (req, res) => {
 });
 
 router.get("/api/students", (req, res) => {
+  var branch = req.query.branch;
+  if (branch == 0) {
+    var populateObject = "";
+  } else {
+    var populateObject = {path: 'orders', select: 'branch', match: {void: false}};
+  }
   var limit = req.query.limit? Number(req.query.limit) : 100;
-  Student.find({}).populate({path: 'lastOrder', match: {void: false}}).sort({updatedAt: -1})
-  .limit(limit).exec((err, students) => {
+  Student.find().populate(populateObject).populate({path: 'lastOrder', match: {void: false}}).sort({updatedAt: -1}).exec((err, students) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});
     }
+    if (branch != 0) {
+      students = students.filter((student) => {
+        var orders = student.orders;
+        orders = orders.filter((o) => { return o.branch == branch } );
+        return !!orders[0];
+      });
+    }
+    students = students.slice(0, limit);
     Student.count({}, (err, count) => {
       if (err) {
         return res.status(400).send({message: "something's wrong "});
@@ -201,7 +215,7 @@ router.get("/api/students", (req, res) => {
 });
 
 router.get('/api/students/:id', (req, res) => {
-  Student.findById(req.params.id).populate({path: "orders", options: {sort: {date: -1}}, match: {void: false}}).then((student) => {
+  Student.findById(req.params.id).populate({path: "orders", options: {sort: {date: -1}}, match: {void: false, branch: req.user.branch}}).then((student) => {
     if (!student) {
       return res.status(400).send({message: "no student found"});
     }
