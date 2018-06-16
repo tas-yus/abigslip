@@ -215,7 +215,11 @@ router.get("/api/students", (req, res) => {
 });
 
 router.get('/api/students/:id', (req, res) => {
-  Student.findById(req.params.id).populate({path: "orders", options: {sort: {date: -1}}, match: {void: false, branch: req.user.branch}}).then((student) => {
+  var matchObject = {void: false};
+  if (req.user.branch != 0) {
+    matchObject.branch = req.user.branch;
+  }
+  Student.findById(req.params.id).populate({path: "orders", options: {sort: {date: -1}}, match: matchObject}).then((student) => {
     if (!student) {
       return res.status(400).send({message: "no student found"});
     }
