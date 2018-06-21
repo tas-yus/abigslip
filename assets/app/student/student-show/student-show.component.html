@@ -8,6 +8,7 @@
       <p class="text-primary pl-2" style="cursor:pointer" (click)="canEdit = !canEdit" *ngIf="authService.isAdmin()">{{canEdit? 'ซ่อน':'แก้'}}</p>
     </div>
   </div>
+  <p *ngIf="authService.isAdmin()"><span class="font-weight-bold">สร้างโดย: </span>{{branchArray[student.createdBy]}}</p>
 
   <div *ngIf="canEdit">
     <h6 class="font-weight-bold">แก้ไขชื่อเด็ก</h6>

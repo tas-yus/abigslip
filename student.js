@@ -17,6 +17,9 @@ var StudentSchema = new mongoose.Schema({
   lastOrder: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Order"
+  },
+  createdBy: {
+    type: Number
   }
 }, {
   timestamps: true,

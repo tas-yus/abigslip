@@ -509,6 +509,31 @@ router.post("/api/excel", allowAdmin, (req, res) => {
     });
 });
 
+router.put('/api/students/createdBy', (req, res) => {
+  Student.find({}).populate({path: "orders", select: "branch", match: {void: false}}).exec((err, students) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).send({err, message: "Something went wrong"});
+    }
+    async.forEach(students, (student, cb) => {
+      if (student.orders.length != 0) {
+        // console.log(student);
+        student.createdBy = student.orders[0].branch;
+        student.save((err) => {
+          if (err) {
+            console.log(err);
+            return res.status(400).send({err, message: "Something went wrong"});
+          }
+          console.log("saved");
+          cb();
+        });
+      } else {
+        cb();
+      }
+    });
+  });
+});
+
 router.put('/api/students/:id', (req, res) => {
   Student.findByIdAndUpdate(req.params.id, {firstname: req.body.firstname, lastname: req.body.lastname}, {new: true}, (err, student) => {
     if (err) {
@@ -535,7 +560,9 @@ router.put('/api/orders/:id/books', (req, res) => {
       return res.status(200).send();
     })
   });
-})
+});
+
+
 
 // router.delete('/api/orders/:id', (req, res) => {
 //   Order.findByIdAndDelete(req.params.id, (err) => {

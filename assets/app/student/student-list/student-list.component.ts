@@ -65,4 +65,12 @@ export class StudentListComponent implements OnInit {
     }
     return `${parsedDate[1]}-${parsedDate[0]}-${parsedDate[2]}`;
   }
+
+  // onUpdateStudent() {
+  //   this.http.put(`/api/students/createdBy?token=${this.authService.getToken()}&&limit=${this.limit}&&branch=${this.branch}`, null).subscribe((data) => {
+  // 
+  //   }, (err) => {
+  //     console.log(err);
+  //   });
+  // }
 }

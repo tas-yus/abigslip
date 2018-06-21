@@ -188,23 +188,15 @@ router.get("/api/students/search", (req, res) => {
 router.get("/api/students", (req, res) => {
   var branch = req.query.branch;
   if (branch == 0) {
-    var populateObject = "";
+    var queryObject = {};
   } else {
-    var populateObject = {path: 'orders', select: 'branch', match: {void: false}};
+    var queryObject = {createdBy: branch};
   }
   var limit = req.query.limit? Number(req.query.limit) : 100;
-  Student.find().populate(populateObject).populate({path: 'lastOrder', match: {void: false}}).sort({updatedAt: -1}).exec((err, students) => {
+  Student.find(queryObject).populate({path: "lastOrder", match: {void: false}}).sort({updatedAt: -1}).limit(limit).exec((err, students) => {
     if (err) {
       return res.status(400).send({message: "something's wrong "});
     }
-    if (branch != 0) {
-      students = students.filter((student) => {
-        var orders = student.orders;
-        orders = orders.filter((o) => { return o.branch == branch } );
-        return !!orders[0];
-      });
-    }
-    students = students.slice(0, limit);
     Student.count({}, (err, count) => {
       if (err) {
         return res.status(400).send({message: "something's wrong "});
@@ -273,6 +265,7 @@ router.post('/api/students', (req, res) => {
       return res.status(400).send({message: "มีเด็กอยู่ในระบบอยู่แล้ว โปรดเข้าหน้าเพจของเด็กเพื่อเพิ่มรายการ"});
     }
     var student = new Student (queryObject);
+    student.createdBy = req.user.branch;
     student.save((err, student) => {
       if (err) {
         console.log(err);
