@@ -33,13 +33,9 @@
         </div>
 
         <div class="form-group">
-          <input type="text" name="courseCode" class="form-control"
-          placeholder="รหัสคอร์ส" [(ngModel)]="ngOrder.courseCode">
-        </div>
-
-        <div class="form-group">
-          <input type="number" name="price" class="form-control"
-          placeholder="ราคาคอร์ส" [(ngModel)]="ngOrder.price">
+          <select name="group" *ngIf="groups.length !== 0" [(ngModel)]="group" class="form-control">
+            <option *ngFor="let group of groups" value="{{group._id}}">{{group.code}} - {{group.title}}</option>
+          </select>
         </div>
 
         <div class="form-group">

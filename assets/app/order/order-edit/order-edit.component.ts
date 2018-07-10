@@ -28,7 +28,9 @@ export class OrderEditComponent implements OnInit {
   course = 0;
   courses = [];
   books = [];
+  groups = [];
   selectedBooks = [];
+  group = null;
   types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
   branchArray: any = [
     "Admin",
@@ -55,6 +57,8 @@ export class OrderEditComponent implements OnInit {
 
   requestOrder(id) {
     this.http.get<any>(`/api/orders/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
+      this.requestGroups();
+      this.group = data.group;
       if (data.claimed && data.type != 5 || data.createdByServer || data.void) {
         this.canEdit = false;
       }
@@ -95,13 +99,16 @@ export class OrderEditComponent implements OnInit {
   onEditOrder(form: NgForm) {
     this.ngOrder.date = this.model.formatted;
     this.ngOrder.type = this.type;
+    this.ngOrder.group = this.group;
     const id = this.route.snapshot.params['id'];
     this.http.post<any>(`/api/orders/${id}/verify?token=${this.authService.getToken()}`, this.ngOrder)
     .subscribe((data) => {
       this.successMessage = data.message;
       this.router.navigate([`/orders/${data.id}/edit`]);
       this.requestOrder(data.id);
-      this.canEdit = false;
+      if (this.order.claimed) {
+        this.canEdit = false;
+      } 
     }, (err) => {
       this.errorMessage1 = err.error.message;
       setTimeout(() => {
@@ -205,6 +212,28 @@ export class OrderEditComponent implements OnInit {
       setTimeout(() => {
         this.errorMessage1 = null;
       }, 3000);
+    });
+  }
+
+  requestGroups() {
+    this.http.get<any[]>(`/api/groups?token=${this.authService.getToken()}`).subscribe((data) => {
+      this.groups = data;
+      if (this.groups.length == 0) {
+        this.group = null;
+      }
+    }, (err) => {
+      console.log(err);
+    });
+  }
+
+  requestFreeGroups() {
+    this.http.get<any[]>(`/api/groups/free?token=${this.authService.getToken()}`).subscribe((data) => {
+      this.groups = data;
+      if (this.groups.length == 0) {
+        this.group = null;
+      }
+    }, (err) => {
+      console.log(err);
     });
   }
   // onDelete() {

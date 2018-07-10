@@ -12,6 +12,7 @@ var bcrypt = require("bcryptjs");
 var jwt = require("jsonwebtoken");
 var User = require("../user");
 var Book = require("../book");
+var Group = require("../group");
 
 var workbook = new Excel.Workbook();
 var processFormBody = multer({storage: multer.memoryStorage()}).single('file');
@@ -68,77 +69,126 @@ router.get('/api/orders', allowAdmin, (req, res) => {
 });
 
 router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
-  if (req.body.type == 4) {
-    var queryObject = {
-      type: req.body.type,
-      courseCode: String(req.body.courseCode).trim(),
-      date: parseDate(req.body.date),
-      price: req.body.price
-    };
-  } else {
-    var queryObject = {
-      type: req.body.type,
-      code: String(req.body.code).trim(),
-      courseCode: String(req.body.courseCode).trim(),
-      date: parseDate(req.body.date),
-      price: req.body.price
-    };
-  }
-  Order.findOne(queryObject).then((order) => {
-    if (!order) {
-      return res.status(400).send({message: "ยังไม่เคยมีสลิปนี้ในระบบ"});
+  Group.findById(req.body.group, (err, group) => {
+    if (err) {
+      return res.status(400).send({message: "something's wrong"});
     }
-    if (order.claimed) {
-      return res.status(400).send({message: "มีสลิปที่เหมือนกันนี้ที่ถูกเคลมแล้ว", order});
+    if (req.body.type == 4) {
+      var queryObject = {
+        type: req.body.type,
+        courseCode: String(group.code).trim(),
+        date: parseDate(req.body.date),
+        price: group.price,
+        void: false
+      };
+    } else {
+      var queryObject = {
+        type: req.body.type,
+        code: String(req.body.code).trim(),
+        courseCode: String(group.code).trim(),
+        date: parseDate(req.body.date),
+        price: group.price,
+        void: false
+      };
     }
-    if (!order.createdByServer) {
-      return res.status(400).send({message: "มีสลิปที่เหมือนกันนี้ในระบบที่ถูกสร้างโดยพนักงาน", order});
-    }
-    Order.findByIdAndUpdate(req.body.oldId, {void: true, matchedWith: order._id}, (err, oldOrder) => {
-      if (err) {
-        return res.status(400).send({message: "something's wrong"});
-      }
-      Student.findById(req.body.studentId, (err, student) => {
-        if (err) {
-          return res.status(400).send({message: "something's wrong"});
-        }
-        student.orders.push(order._id);
-        student.lastOrder = order._id;
-        student.save((err) => {
+    Order.findOne(queryObject).then((order) => {
+      if (!order) {
+        Order.findByIdAndUpdate(req.params.id, {void: true}, (err, oldOrder) => {
           if (err) {
             return res.status(400).send({message: "something's wrong"});
           }
-          order.claimed = true;
-          order.claimedBy = req.body.studentId;
-          order.claimedAt = new Date();
-          order.branch = oldOrder.branch;
-          order.books = oldOrder.books;
-          order.group = oldOrder.group;
-          order.course = oldOrder.course;
-          async.forEach(oldOrder.books, (book, callback) => {
-            Book.findByIdAndUpdate(book, { $push: { orders: order._id  }}, (err, book) => {
-              if (err) {
-                return res.status(400).send({message: "something's wrong"});
-              }
-              callback();
-            });
-          }, (err) => {
+          var newOrder = new Order(queryObject);
+          newOrder.claimedBy = req.body.studentId;
+          newOrder.claimedAt = oldOrder.claimedAt;
+          newOrder.branch = oldOrder.branch;
+          newOrder.books = oldOrder.books;
+          newOrder.group = oldOrder.group;
+          newOrder.course = oldOrder.course;
+          newOrder.save((err, order) => {
             if (err) {
               return res.status(400).send({message: "something's wrong"});
             }
-            order.save((err, order) => {
+            Student.findById(req.body.studentId, (err, student) => {
               if (err) {
                 return res.status(400).send({message: "something's wrong"});
               }
-              res.status(200).send({message: "ทำการแก้ไข และ match สลิปกับในระบบเรียบร้อย!", id: order._id});
+              student.orders.push(order._id);
+              student.lastOrder = order._id;
+              student.save((err) => {
+                if (err) {
+                  return res.status(400).send({message: "something's wrong"});
+                }
+                async.forEach(oldOrder.books, (book, callback) => {
+                  Book.findByIdAndUpdate(book, { $push: { orders: order._id  }}, (err, book) => {
+                    if (err) {
+                      return res.status(400).send({message: "something's wrong"});
+                    }
+                    callback();
+                  });
+                }, (err) => {
+                  if (err) {
+                    return res.status(400).send({message: "something's wrong"});
+                  }
+                  res.status(200).send({message: "ทำการแก้ไขสลิปในระบบเรียบร้อย!", id: order._id});
+                });
+              });
             });
           });
         });
-      });
+      } else {
+        if (order.claimed) {
+          return res.status(400).send({message: "มีสลิปที่เหมือนกันนี้ที่ถูกเคลมแล้ว", order});
+        }
+        if (!order.createdByServer) {
+          return res.status(400).send({message: "มีสลิปที่เหมือนกันนี้ในระบบที่ถูกสร้างโดยพนักงาน", order});
+        }
+        Order.findByIdAndUpdate(req.body.oldId, {void: true, matchedWith: order._id}, (err, oldOrder) => {
+          if (err) {
+            return res.status(400).send({message: "something's wrong"});
+          }
+          Student.findById(req.body.studentId, (err, student) => {
+            if (err) {
+              return res.status(400).send({message: "something's wrong"});
+            }
+            student.orders.push(order._id);
+            student.lastOrder = order._id;
+            student.save((err) => {
+              if (err) {
+                return res.status(400).send({message: "something's wrong"});
+              }
+              order.claimed = true;
+              order.claimedBy = req.body.studentId;
+              order.claimedAt = new Date();
+              order.branch = oldOrder.branch;
+              order.books = oldOrder.books;
+              order.group = oldOrder.group;
+              order.course = oldOrder.course;
+              async.forEach(oldOrder.books, (book, callback) => {
+                Book.findByIdAndUpdate(book, { $push: { orders: order._id  }}, (err, book) => {
+                  if (err) {
+                    return res.status(400).send({message: "something's wrong"});
+                  }
+                  callback();
+                });
+              }, (err) => {
+                if (err) {
+                  return res.status(400).send({message: "something's wrong"});
+                }
+                order.save((err, order) => {
+                  if (err) {
+                    return res.status(400).send({message: "something's wrong"});
+                  }
+                  res.status(200).send({message: "ทำการแก้ไข และ match สลิปกับในระบบเรียบร้อย!", id: order._id});
+                });
+              });
+            });
+          });
+        });
+      }
+    }).catch((err) => {
+      console.log(err);
+      res.status(400).send({message: "something's wrong"});
     });
-  }).catch((err) => {
-    console.log(err);
-    res.status(400).send({message: "something's wrong"});
   });
 });
 

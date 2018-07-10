@@ -122,7 +122,7 @@ router.get('/api/books/:id', (req, res) => {
   var from = new Date(req.query.year, req.query.month, 1);
   var to = new Date(req.query.year, req.query.month, daysInMonth(Number(req.query.month)+1, req.query.year) + 1);
   var matchObject = {
-    updatedAt: {
+    claimedAt: {
         $gte: from,
         $lt: to
     },
@@ -131,7 +131,7 @@ router.get('/api/books/:id', (req, res) => {
   if (req.query.branch != 0) {
     matchObject.branch = req.query.branch;
   }
-  Book.findById(req.params.id).select("title _id numBook orders updatedAt")
+  Book.findById(req.params.id).select("title _id numBook orders claimedAt")
   .populate({path: "orders", match: matchObject})
   .exec((err, book) => {
     if (err) {
