@@ -471,7 +471,7 @@ router.post("/api/excel", allowAdmin, (req, res) => {
         {
           date: {
               $gte: from,
-              $lte: to
+              $lte: to + 3600*24
           }
         },
         {
@@ -479,10 +479,10 @@ router.post("/api/excel", allowAdmin, (req, res) => {
             {
               claimedAt: {
                 $gte: from,
-                $lte: to
+                $lte: to + 3600*24
               },
               date: {
-                  $lte: from-1,
+                  $lte: from,
               },
               claimed: true
             }
@@ -497,7 +497,7 @@ router.post("/api/excel", allowAdmin, (req, res) => {
     queryObject = {
       date: {
           $gte: from,
-          $lte: to
+          $lte: to + 3600*24
       },
       claimed: false,
       createdByServer: false
@@ -506,7 +506,7 @@ router.post("/api/excel", allowAdmin, (req, res) => {
     queryObject = {
       date: {
           $gte: from,
-          $lte: to
+          $lte: to + 3600*24
       },
       claimed: false,
       createdByServer: true
