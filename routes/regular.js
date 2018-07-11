@@ -127,7 +127,7 @@ router.post('/api/students/:id/courses', (req, res) => {
             newOrder.code = null;
           } else {
             newOrder.claimedAt = new Date();
-            newOrder.code = req.body.code;
+            newOrder.code = String(req.body.code).trim();
           }
           newOrder.save((err, order) => {
             if (err) {

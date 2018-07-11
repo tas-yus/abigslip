@@ -273,7 +273,7 @@ router.post('/api/orders/parse', allowAdmin, (req, res) => {
           } else if (sheet.type != 4)  {
             var code = row.values[2];
           }
-          code = String(code).replace(/[^\w\s]/gi, '');
+          code = (String(code).replace(/[^\w\s]/gi, '')).trim();
           var courseCode = String(row.values[6]).trim();
           var price = row.values[3];
           var queryObject = {
