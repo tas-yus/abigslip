@@ -31,7 +31,9 @@ export class OrderEditComponent implements OnInit {
   groups = [];
   selectedBooks = [];
   group = null;
-  types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
+  price = null;
+  showRefund = false;
+  types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE', 'REFUND'];
   branchArray: any = [
     "Admin",
     "BG", "BW", "BB",
@@ -108,7 +110,7 @@ export class OrderEditComponent implements OnInit {
       this.requestOrder(data.id);
       if (this.order.claimed) {
         this.canEdit = false;
-      } 
+      }
     }, (err) => {
       this.errorMessage1 = err.error.message;
       setTimeout(() => {
@@ -234,6 +236,40 @@ export class OrderEditComponent implements OnInit {
       }
     }, (err) => {
       console.log(err);
+    });
+  }
+
+  onRemoveRefund() {
+    const id = this.route.snapshot.params['id'];
+    this.http.delete<any>(`/api/orders/${id}/refund?token=${this.authService.getToken()}`).subscribe((data) => {
+      this.requestOrder(id);
+      this.successMessage = data.message;
+      setTimeout(() => {
+        this.successMessage = null;
+      }, 3000);
+    }, (err) => {
+      this.errMessage = err.error.message;
+      setTimeout(() => {
+        this.errMessage = null;
+      }, 3000);
+    });
+  }
+
+  onRefund() {
+    const id = this.route.snapshot.params['id'];
+    this.http.post<any>(`/api/orders/${id}/refund?token=${this.authService.getToken()}`, {price: this.price}).subscribe((data) => {
+      this.requestOrder(id);
+      this.showRefund = false;
+      this.price = null;
+      this.successMessage = data.message;
+      setTimeout(() => {
+        this.successMessage = null;
+      }, 3000);
+    }, (err) => {
+      this.errMessage = err.error.message;
+      setTimeout(() => {
+        this.errMessage = null;
+      }, 3000);
     });
   }
   // onDelete() {

@@ -27,16 +27,18 @@
 
       <form #f="ngForm" *ngIf="showEdit">
         <h6>แก้ไขข้อมูลสลิป</h6>
-        <div class="form-group">
-          <input type="text" name="code" class="form-control"
-          placeholder="confirmation code" [(ngModel)]="ngOrder.code">
-        </div>
+        <ng-template [ngIf]="ngOrder.type != 6">
+          <div class="form-group">
+            <input type="text" name="code" class="form-control"
+            placeholder="confirmation code" [(ngModel)]="ngOrder.code">
+          </div>
 
-        <div class="form-group">
-          <select name="group" *ngIf="groups.length !== 0" [(ngModel)]="group" class="form-control">
-            <option *ngFor="let group of groups" value="{{group._id}}">{{group.code}} - {{group.title}}</option>
-          </select>
-        </div>
+          <div class="form-group">
+            <select name="group" *ngIf="groups.length !== 0" [(ngModel)]="group" class="form-control">
+              <option *ngFor="let group of groups" value="{{group._id}}">{{group.code}} - {{group.title}}</option>
+            </select>
+          </div>
+        </ng-template>
 
         <div class="form-group">
           <my-date-picker name="mydate" [options]="myDatePickerOptions"
@@ -44,6 +46,7 @@
           </my-date-picker>
         </div>
 
+        <ng-template [ngIf]="ngOrder.type != 6">
           <div class="form-group">
             <select (change)="updateForm($event)" name="type" [(ngModel)]="ngOrder.type" class="form-control" id="">
               <option value="3">Counter Service</option>
@@ -52,6 +55,13 @@
               <option value="4">บัตร KTC</option>
             </select>
           </div>
+        </ng-template>
+
+        <ng-template [ngIf]="ngOrder.type == 6">
+          <div class="form-group">
+            <input type="number" name="price" placeholder="ราคา (บาท)" class="form-control" [(ngModel)]="ngOrder.price">
+          </div>
+        </ng-template>
 
           <div class="form-group text-right">
               <button (click)="onEditOrder(f)" [disabled]="!f.form.valid || resultingOrder" class="btn btn-primary">Edit</button>
@@ -99,8 +109,35 @@
         <div class="form-group text-right">
             <button (click)="onEditBook(f)" [disabled]="!canAdd()" class="btn btn-primary">Edit</button>
         </div>
+
       </div>
     </div>
+    <ng-template [ngIf]="!order.refund || !order.refund.price">
+      <hr>
+      <button (click)="showRefund = !showRefund" *ngIf="!showRefund" class="btn btn-sm btn-primary py-0 my-0">
+        Refund
+      </button>
+      <div *ngIf="showRefund" class="my-2">
+        <div class="text-right my-2">
+          <i class="fa fa-times cursor" (click)='showRefund = !showRefund'></i>
+        </div>
+        <div class="form-group">
+          <input type="number" name="price" placeholder="ราคา (บาท)" class="form-control "[(ngModel)]="price" autocomplete="off">
+        </div>
+        <div class="text-right">
+          <button class="btn btn-sm btn-success py-0" (click)="onRefund()" [disabled]="!price">Confirm</button>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template [ngIf]="order.refund && order.refund.price">
+      <hr>
+      <div class="d-flex justify-content-between">
+        <div class="text-danger">
+          ทำการลดหนี้ {{order.refund.price}} บาท
+        </div>
+        <i *ngIf="authService.isAdmin()" class="cursor fa fa-times text-danger" (click)="onRemoveRefund()"></i>
+      </div>
+    </ng-template>
   </div>
 </div>
 

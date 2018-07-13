@@ -17,7 +17,7 @@ export class StudentShowComponent implements OnInit {
   type = null;
   date = null;
   price = null;
-  types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE'];
+  types = ['KTB', 'GSB', 'CS', 'KTC', 'FREE', 'REFUND'];
   model = null;
   groups = [];
   courses = [];
@@ -40,6 +40,7 @@ export class StudentShowComponent implements OnInit {
     "BU", "BPK", "BN",
     "BA", "BQ"
   ];
+  showRefund = [];
 
   @ViewChild('selectMode') selectMode;
 
@@ -52,6 +53,10 @@ export class StudentShowComponent implements OnInit {
   constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, public authService: AuthService) {}
 
   ngOnInit() {
+    this.requestStudent();
+  }
+
+  requestStudent() {
     const id = this.route.snapshot.params['id'];
     this.http.get<any[]>(`/api/students/${id}?token=${this.authService.getToken()}`).subscribe((data) => {
       this.student = data;
@@ -63,7 +68,6 @@ export class StudentShowComponent implements OnInit {
       this.router.navigate(['/home']);
     });
   }
-
   requestGroups() {
     this.http.get<any[]>(`/api/groups?token=${this.authService.getToken()}`).subscribe((data) => {
       this.groups = data;
@@ -129,9 +133,16 @@ export class StudentShowComponent implements OnInit {
     const books = this.selectedBooks;
     const group = this.group;
     const course = this.course;
-    var body:any = {
-      type: this.type, code, date, branch, books, group, course
-    };
+    var body = null;
+    if (this.type != 6) {
+      body = {
+        type: this.type, code, date, branch, books, group, course
+      };
+    } else {
+      body = {
+        type: this.type, date, branch, price: this.price, books
+      }
+    }
     this.loading = true;
     this.http.post<any>(`/api/students/${id}/courses?token=${this.authService.getToken()}`, body).subscribe((data) => {
       var orderId = data.orderId;
@@ -235,7 +246,7 @@ export class StudentShowComponent implements OnInit {
   }
 
   validate(type, str) {
-    if (type == 5 || type == 4) return true;
+    if (type == 5 || type == 4 || type == 6) return true;
     if (type == 1 || type == 2) {
       var validator = /0\d{9}/;
     } else if (type == 3){
@@ -245,7 +256,8 @@ export class StudentShowComponent implements OnInit {
   }
 
   canAdd() {
-    if (this.type < 1 || this.type > 5) return false;
+    if (this.type < 1 || this.type > 6) return false;
+    if (this.type == 6 && this.date && this.price) return true;
     if (!this.date) return false;
     if (this.group == 0) return false;
     if (this.getGroup(this.group).courses && this.getGroup(this.group).courses.length !== 0) {
@@ -283,6 +295,38 @@ export class StudentShowComponent implements OnInit {
       this.student.lastname = data.lastname;
       this.canEdit = false;
       this.successMessage = "แก้ไขเด็กสำเร็จ โปรดตรวจเช็ค";
+      setTimeout(() => {
+        this.successMessage = null;
+      }, 3000);
+    }, (err) => {
+      this.errMessage = err.error.message;
+      setTimeout(() => {
+        this.errMessage = null;
+      }, 3000);
+    });
+  }
+
+  onRefund(id) {
+    this.http.post<any>(`/api/orders/${id}/refund?token=${this.authService.getToken()}`, {price: this.price}).subscribe((data) => {
+      this.requestStudent();
+      this.showRefund = [];
+      this.price = null;
+      this.successMessage = data.message;
+      setTimeout(() => {
+        this.successMessage = null;
+      }, 3000);
+    }, (err) => {
+      this.errMessage = err.error.message;
+      setTimeout(() => {
+        this.errMessage = null;
+      }, 3000);
+    });
+  }
+
+  onRemoveRefund(id) {
+    this.http.delete<any>(`/api/orders/${id}/refund?token=${this.authService.getToken()}`).subscribe((data) => {
+      this.requestStudent();
+      this.successMessage = data.message;
       setTimeout(() => {
         this.successMessage = null;
       }, 3000);

@@ -50,7 +50,8 @@
       <td class="font-weight-bold {{types[order.type-1]}}">{{types[order.type-1]}}</td>
       <td><a style="text-decoration: none" routerLink="/orders/{{order._id}}/edit">{{order.code? order.code:'-'}}</a></td>
       <td>{{order.courseCode? order.courseCode: '-'}}</td>
-      <td>{{order.price}}</td>
+      <td *ngIf="!order.refund || !order.refund.price">{{order.price}}</td>
+      <td *ngIf="order.refund && order.refund.price"><span style="text-decoration:line-through; color: #aaa">{{order.price}}</span><div><span>{{order.price - order.refund.price}}</span></div></td>
       <td>{{updateDate(order.date)}}</td>
       <td>{{branchArray[order.branch]}}</td>
       <td>

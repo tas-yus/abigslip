@@ -48,10 +48,12 @@ router.get('/api/orders', allowAdmin, (req, res) => {
     },
     void: false
   };
-  if (type == 7) {
+  if (type == 8) {
     queryObject.void = true;
-  } else if (type == 6) {
+  } else if (type == 7) {
     queryObject.claimed = false;
+  } else if (type == 6) {
+    queryObject.refund = {$ne:null}
   } else if (type != 0) {
     queryObject.type = type;
   }
@@ -81,13 +83,20 @@ router.post('/api/orders/:id/verify', allowAdmin, (req, res) => {
         price: group.price,
         void: false
       };
-    } else {
+    } else if (req.body.type != 6) {
       var queryObject = {
         type: req.body.type,
         code: String(req.body.code).trim(),
         courseCode: String(group.code).trim(),
         date: parseDate(req.body.date),
         price: group.price,
+        void: false
+      };
+    } else {
+      var queryObject = {
+        type: req.body.type,
+        date: parseDate(req.body.date),
+        price: req.body.price,
         void: false
       };
     }
@@ -410,6 +419,36 @@ router.put("/api/orders/:id/claim", allowAdmin, (req, res) => {
   });
 });
 
+router.post("/api/orders/:id/refund", allowAdmin, (req, res) => {
+  Order.findById(req.params.id, (err, order) => {
+    if (err || !req.body.price) {
+      console.log(err);
+      return res.status(400).send({err, message: "Something went wrong"});
+    }
+    if (order.price < req.body.price) {
+      return res.status(400).send({err, message: "ราคาลดหนี้ต้องน้อยกว่าราคาคอร์ส"});
+    }
+    order.refund = {price: req.body.price, date: new Date()};
+    order.save((err) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).send({err, message: "Something went wrong"});
+      }
+      return res.status(200).send({message: "ทำการลดหนี้สำเร็จ"});
+    });
+  });
+});
+
+router.delete("/api/orders/:id/refund", allowAdmin, (req, res) => {
+  Order.findByIdAndUpdate(req.params.id, {refund: undefined}, (err, order) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).send({err, message: "Something went wrong"});
+    }
+    return res.status(200).send({message: "ทำการยกเลิกการลดหนี้สำเร็จ!"});
+  });
+});
+
 router.post('/api/slips/upload', allowAdmin, (req, res) => {
   processFormBody(req, res, function (err) {
     if (err) {
@@ -517,7 +556,7 @@ router.post("/api/excel", allowAdmin, (req, res) => {
   Order.find(queryObject).populate({path: "claimedBy", select: "firstname lastname"}).exec((err, orders) => {
       var workbook = new Excel.Workbook();
       var worksheet = workbook.addWorksheet("Sheet1");
-      var rows = [["วันที่", "รหัสโอน", "รหัสคอร์ส", "ราคา", "รูปแบบ", "สาขา", "เคลมแล้ว?", "วันที่เคลม", "ชื่อนักเรียน"]];
+      var rows = [["วันที่", "รหัสโอน", "รหัสคอร์ส", "ราคา", "รูปแบบ", "สาขา", "เคลมแล้ว?", "วันที่เคลม", "ชื่อนักเรียน", "หมายเหตุ"]];
       var types = ["KTB", "GSB", "CS", "KTC", "FREE"];
       const branchArray = [
         "Admin",
@@ -529,7 +568,13 @@ router.post("/api/excel", allowAdmin, (req, res) => {
       ];
       async.forEach(orders, (order, cb) => {
         if (order.void) return cb();
-        var row = [order.date, order.code, order.courseCode, order.price, types[order.type-1]];
+        var price = order.price;
+        var refund = false;
+        if (order.refund && !!order.refund.price) {
+          price -= order.refund.price;
+          refund = true;
+        }
+        var row = [order.date, order.code, order.courseCode, price, types[order.type-1]];
         if (order.branch+1) {
           row.push(branchArray[order.branch]);
         } else {
@@ -540,7 +585,16 @@ router.post("/api/excel", allowAdmin, (req, res) => {
           row.push(order.claimedAt);
           if (order.claimedBy) {
             row.push(`${order.claimedBy.firstname} ${order.claimedBy.lastname}`);
+          } else {
+            row.push("");
           }
+        } else {
+          row.push("");
+          row.push("");
+          row.push("");
+        }
+        if (refund) {
+          row.push(`ทำการลดหนี้ ${order.refund.price} บาท จาก ${order.price} บาท`);
         }
         rows.push(row);
         cb();
@@ -550,7 +604,7 @@ router.post("/api/excel", allowAdmin, (req, res) => {
         }
         worksheet.addRows(rows);
         var timestamp = new Date().valueOf();
-        var filename = 'U' +  String(timestamp) + 'output.xlsx';
+        var filename = 'output.xlsx';
         workbook.xlsx.writeFile(path.join(__dirname, '../public/', filename)).then(function() {
           console.log("xlsx file is written.");
           res.status(200).send({message: 'xlsx file is written.', filename: filename});

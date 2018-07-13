@@ -53,6 +53,7 @@
             <option value="2">ออมสิน GSB</option>
             <option value="4">บัตร KTC</option>
             <option value="5">Gift Voucher ฟรี</option>
+            <!-- <option value="6">ใบลดหนี้</option> -->
           </select>
         </div>
 
@@ -82,28 +83,30 @@
             </span>
           </div>
 
-          <div class="form-group">
-            <select name="group" (change)="onSelectGroup()" *ngIf="groups.length !== 0" [(ngModel)]="group" class="form-control">
-              <option value="0">เลือกรหัสคอร์ส</option>
-              <option *ngFor="let group of groups" value="{{group._id}}">{{group.code}} - {{group.title}}</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <select name="course" (change)="onSelectCourse()" *ngIf="courses.length !== 0" [(ngModel)]="course" class="form-control">
-              <option value="0">เลือกคอร์ส</option>
-              <option *ngFor="let course of courses" value="{{course._id}}">{{course.title}}</option>
-            </select>
-          </div>
-
-          <div class="form-group" *ngIf="type && group != 0 && course != 0 && books.length >= 1 && getCourse(course)">
-            <p>โปรดเลือกหนังสือ {{getCourse(course).numBook}} รายการ {{getCourse(course).strict? '':'หรือน้อยกว่า (ขึ้นกับคอร์สเรียนที่น้องสมัคร)'}}</p>
-            <div *ngFor="let book of books">
-              <input (change)="onSelectBooks($event)" type="checkbox" [checked]="getCourse(course).strict && check(book._id)" value="{{book._id}}"
-              [disabled]="selectedBooks.length >= getCourse(course).numBook">
-              {{book.title}}
+          <ng-template [ngIf]="type != 6">
+            <div class="form-group">
+              <select name="group" (change)="onSelectGroup()" *ngIf="groups.length !== 0" [(ngModel)]="group" class="form-control">
+                <option value="0">เลือกรหัสคอร์ส</option>
+                <option *ngFor="let group of groups" value="{{group._id}}">{{group.code}} - {{group.title}}</option>
+              </select>
             </div>
-          </div>
+
+            <div class="form-group">
+              <select name="course" (change)="onSelectCourse()" *ngIf="courses.length !== 0" [(ngModel)]="course" class="form-control">
+                <option value="0">เลือกคอร์ส</option>
+                <option *ngFor="let course of courses" value="{{course._id}}">{{course.title}}</option>
+              </select>
+            </div>
+
+            <div class="form-group" *ngIf="type && group != 0 && course != 0 && books.length >= 1 && getCourse(course)">
+              <p>โปรดเลือกหนังสือ {{getCourse(course).numBook}} รายการ {{getCourse(course).strict? '':'หรือน้อยกว่า (ขึ้นกับคอร์สเรียนที่น้องสมัคร)'}}</p>
+              <div *ngFor="let book of books">
+                <input (change)="onSelectBooks($event)" type="checkbox" [checked]="getCourse(course).strict && check(book._id)" value="{{book._id}}"
+                [disabled]="selectedBooks.length >= getCourse(course).numBook">
+                {{book.title}}
+              </div>
+            </div>
+          </ng-template>
 
           <label style="font-size: 15px;" class="pt-2">โปรดใส่วันที่โอน: </label>
           <div class="form-group">
@@ -114,6 +117,13 @@
               *โปรดใส่วันที่การโอน
             </span> -->
           </div>
+
+          <ng-template [ngIf]="type == 6">
+            <div class="form-group">
+              <input type="number" name="price" placeholder="ราคา (บาท)" class="form-control "[(ngModel)]="price" autocomplete="off">
+            </div>
+          </ng-template>
+
         </div>
 
 
@@ -132,7 +142,7 @@
   </div>
 
   <p><span class="font-weight-bold">สรุปรายการโอน ({{student.orders.length}}):</span></p>
-    <div class="card my-2" *ngFor="let order of student.orders">
+    <div class="card my-2" *ngFor="let order of student.orders; let i = index">
       <div id="o{{order._id}}" style="cursor:pointer" routerLink="{{authService.isAdmin()? '/orders/'+ order._id + '/edit': '/students/' + student._id}}" class="card-header {{types[order.type-1]}}">
         <h5 class="my-0 text-white">{{types[order.type-1]}}</h5>
       </div>
@@ -152,6 +162,34 @@
         <p *ngIf="!order.course">
           <span class="font-weight-bold">หนังสือที่ออก:</span> ไม่มี
         </p>
+        <ng-template [ngIf]="authService.isAdmin()">
+          <ng-template [ngIf]="!order.refund || !order.refund.price">
+            <hr>
+            <button (click)="showRefund[i] = !showRefund[i]" *ngIf="!showRefund[i]" class="btn btn-sm btn-primary py-0 my-0">
+              Refund
+            </button>
+            <div *ngIf="showRefund[i]" class="my-2">
+              <div class="text-right my-2">
+                <i class="fa fa-times cursor" (click)='showRefund[i] = !showRefund[i]'></i>
+              </div>
+              <div class="form-group">
+                <input type="number" name="price" placeholder="ราคา (บาท)" class="form-control "[(ngModel)]="price" autocomplete="off">
+              </div>
+              <div class="text-right">
+                <button class="btn btn-sm btn-success py-0" (click)="onRefund(order._id)" [disabled]="!price">Confirm</button>
+              </div>
+            </div>
+          </ng-template>
+        </ng-template>
+        <ng-template [ngIf]="order.refund && order.refund.price">
+          <hr>
+          <div class="d-flex justify-content-between">
+            <div class="text-danger">
+              ทำการลดหนี้ {{order.refund.price}} บาท
+            </div>
+            <i *ngIf="authService.isAdmin()" class="cursor fa fa-times text-danger" (click)="onRemoveRefund(order._id)"></i>
+          </div>
+        </ng-template>
       </div>
     </div>
 </div>

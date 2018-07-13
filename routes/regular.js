@@ -47,20 +47,27 @@ router.post('/api/students/:id/courses', (req, res) => {
         console.log(err);
         return res.status(400).send({message: "something's wrong"});
       }
-      if (req.body.type != 4) {
+      if (req.body.type == 4) {
+        var queryObject = {
+          type: req.body.type,
+          price: group.price,
+          date: parseDate(req.body.date),
+          courseCode: group.code
+        };
+      } else if (req.body.type == 6) {
+        var queryObject = {
+          type: req.body.type,
+          courseCode: "refund",
+          price: -Number(req.body.price),
+          date: parseDate(req.body.date)
+        }
+      } else {
         var queryObject = {
           type: req.body.type,
           code: String(req.body.code).trim(),
           courseCode: group.code,
           price: group.price,
           date: parseDate(req.body.date)
-        };
-      } else {
-        var queryObject = {
-          type: req.body.type,
-          price: group.price,
-          date: parseDate(req.body.date),
-          courseCode: group.code
         };
       }
       Order.find(queryObject, (err, orders) => {
@@ -127,7 +134,9 @@ router.post('/api/students/:id/courses', (req, res) => {
             newOrder.code = null;
           } else {
             newOrder.claimedAt = new Date();
-            newOrder.code = String(req.body.code).trim();
+            if (req.body.type != 6) {
+              newOrder.code = String(req.body.code).trim();
+            }
           }
           newOrder.save((err, order) => {
             if (err) {

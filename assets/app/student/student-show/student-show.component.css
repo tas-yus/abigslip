@@ -18,6 +18,10 @@
   background-color: #93E137;
 }
 
+.REFUND {
+  background-color: #4688F1;
+}
+
 .invalid-feedback {
   display: block;
 }
@@ -37,4 +41,8 @@
   text-shadow: 0.5px 0.5px 0.5px red;
   -webkit-transition: all 0.5s; /* Safari */
    transition: all 0.5s;
+}
+
+.cursor {
+  cursor: pointer;
 }

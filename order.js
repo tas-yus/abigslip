@@ -64,6 +64,12 @@ var OrderSchema = new mongoose.Schema({
       default: []
     }
   ],
+  refund: {
+    price: Number,
+    date: {
+      type: Date
+    }
+  }
 }, {
   timestamps: true,
   emitIndexErrors: true
