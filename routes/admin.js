@@ -506,31 +506,15 @@ router.post("/api/excel", allowAdmin, (req, res) => {
   var queryObject;
   if (type == 1) {
     queryObject = {
-      $or:[
-        {
-          date: {
-              $gte: from,
-              $lte: to + 3600000*24
-          }
-        },
-        {
-          $and: [
-            {
-              claimedAt: {
-                $gte: from,
-                $lte: to + 3600000*24
-              },
-              date: {
-                  $lte: from,
-              },
-              claimed: true
-            }
-          ]
-        }
-      ],
+      claimedAt: {
+        $gte: from,
+        $lte: new Date(to.getTime() + 3600000*24)
+      },
+      claimed: true,
       price: {
         $gte: 1
-      }
+      },
+      void: false
     };
   } else if (type == 2) {
     queryObject = {
@@ -539,7 +523,8 @@ router.post("/api/excel", allowAdmin, (req, res) => {
           $lte: to + 3600000*24
       },
       claimed: false,
-      createdByServer: false
+      createdByServer: false,
+      void: false
     };
   } else if (type == 3) {
     queryObject = {
@@ -548,7 +533,8 @@ router.post("/api/excel", allowAdmin, (req, res) => {
           $lte: to + 3600000*24
       },
       claimed: false,
-      createdByServer: true
+      createdByServer: true,
+      void: false
     };
   } else {
     return res.status(400).send({message: "ไม่ได้ระบุรูปแบบ excel ที่ต้องการ"});
